@@ -15,9 +15,9 @@ import { Search, MapPin, Calendar, Users, Plane } from 'lucide-react'
 const flightSearchSchema = z.object({
   origin: z.string().min(3, 'Please select an origin airport'),
   destination: z.string().min(3, 'Please select a destination airport'),
-  departureDate: z.string().min(1, 'Please select a departure date'),
+  departureDate: z.string(),
   passengers: z.number().min(1).max(9),
-  airline: z.string().min(3, 'Please select an airline'),
+  airline: z.string()
 })
 
 type FlightSearchFormData = z.infer<typeof flightSearchSchema>
@@ -81,9 +81,9 @@ export function FlightSearchForm() {
                 {airports.map((airport) => (
                   <option
                     key={airport.code}
-                    value={airport.code}
+                    value={airport.name}
                   >
-                    {airport.name} ({airport.code}) - {airport.city}
+                    {airport.name} ({airport.code}) - {airport.city}/{airport.country}
                   </option>
                 ))}
               </datalist>

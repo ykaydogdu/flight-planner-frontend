@@ -75,7 +75,7 @@ export function Header() {
                   <span className="text-sm text-gray-700">{user?.username}</span>
                 </div>
                 <Button 
-                  variant="ghost" 
+                  variant="outline" 
                   size="sm" 
                   onClick={handleLogout}
                   className="flex items-center space-x-1"
