@@ -8,8 +8,9 @@ import { FlightCard } from '@/components/flight/flight-card'
 import { FlightFilters } from '@/components/flight/flight-filters'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { ArrowLeft, Search, SlidersHorizontal, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react'
+import { Search, SlidersHorizontal, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react'
 import { FlightSearchForm } from '@/components/forms/flight-search-form'
+import backgroundImage from '@/assets/background.jpeg'
 
 export default function FlightsPage() {
   const navigate = useNavigate()
@@ -103,22 +104,19 @@ export default function FlightsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="relative min-h-screen overflow-hidden">
+      {/* Blurred Background */}
+      <div className="absolute inset-0 bg-cover bg-center blur-sm" style={{ backgroundImage: `url(${backgroundImage})` }} />
+      <div className="absolute inset-0 bg-white/40 backdrop-blur-sm" /> 
+
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-6">
-          <Button
-            variant="ghost"
-            onClick={() => navigate('/')}
-            className="mb-4 text-blue-600 hover:text-blue-800"
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Back to Search
-          </Button>
-
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
             <div>
-              <p className="text-sm text-gray-600 mb-1">Search Results</p>
+              <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+                Search Results
+              </h1>
               <h1 className="text-2xl font-bold text-gray-900">{formatSearchSummary()}</h1>
             </div>
             <div className="flex items-center space-x-2 mt-4 sm:mt-0">

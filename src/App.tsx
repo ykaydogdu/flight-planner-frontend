@@ -6,6 +6,7 @@ import HomePage from '@/app/page'
 import FlightsPage from '@/app/flights/page'
 import LoginPage from '@/app/login/page'
 import RegisterPage from '@/app/register/page'
+import MyBookingsPage from '@/app/my-bookings/page'
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/flights" element={<FlightsPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/my-bookings" element={<MyBookingsPage />} />
       </Routes>
     </div>
   )
