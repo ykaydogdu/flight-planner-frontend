@@ -4,12 +4,12 @@ import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
-import { useRouter } from 'next/navigation'
+import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { useFlightStore } from '@/store/flights'
-import { FlightSearchParams } from '@/types'
+import type { FlightSearchParams } from '@/types'
 import { Search, MapPin, Calendar, Users, Plane } from 'lucide-react'
 
 const flightSearchSchema = z.object({
@@ -23,7 +23,7 @@ const flightSearchSchema = z.object({
 type FlightSearchFormData = z.infer<typeof flightSearchSchema>
 
 export function FlightSearchForm() {
-  const router = useRouter()
+  const navigate = useNavigate()
   const { searchFlights, fetchAirports, fetchAirlines, airports, airlines, loading } = useFlightStore()
 
   const {
@@ -54,7 +54,7 @@ export function FlightSearchForm() {
       }
 
       await searchFlights(searchParams)
-      router.push('/flights')
+      navigate('/flights')
     } catch (error) {
       console.error('Search error:', error)
     }

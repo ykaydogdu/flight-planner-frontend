@@ -29,14 +29,13 @@ export interface Airline {
 
 export interface Flight {
   id: number
-  airline: Airline
-  origin: Airport
-  destination: Airport
-  departureTime: string
-  arrivalTime: string
   price: number
-  availableSeats: number
-  totalSeats: number
+  emptySeats: number
+  departureTime: string
+  arrivalTime?: string
+  airline: Airline
+  originAirport: Airport
+  destinationAirport: Airport
 }
 
 export interface FlightSearchParams {

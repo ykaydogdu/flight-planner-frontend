@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from 'axios'
+import axios, { AxiosError } from 'axios'
 
 const API_BASE_URL = 'http://localhost:8080/api/v1'
 
@@ -27,7 +27,7 @@ apiClient.interceptors.request.use(
 
 // Response interceptor to handle errors
 apiClient.interceptors.response.use(
-  (response: AxiosResponse) => {
+  (response) => {
     return response
   },
   (error: AxiosError) => {

@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import { User, AuthRequest, AuthResponse } from '@/types'
+import type { User, AuthRequest, AuthResponse } from '@/types'
 import { apiClient } from '@/lib/api'
 
 interface AuthState {
@@ -20,15 +20,11 @@ export const useAuthStore = create<AuthState>()(
       isAuthenticated: false,
 
       login: async (credentials: AuthRequest) => {
-        try {
           const response = await apiClient.post<AuthResponse>('/auth/login', credentials)
           const { token, user } = response.data
           
           localStorage.setItem('auth-token', token)
           set({ user, token, isAuthenticated: true })
-        } catch (error) {
-          throw error
-        }
       },
 
       logout: () => {
@@ -37,11 +33,7 @@ export const useAuthStore = create<AuthState>()(
       },
 
       register: async (data: { username: string; email: string; password: string }) => {
-        try {
-          await apiClient.post('/auth/register', data)
-        } catch (error) {
-          throw error
-        }
+        await apiClient.post('/auth/register', data)
       },
     }),
     {

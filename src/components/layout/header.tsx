@@ -1,7 +1,6 @@
 'use client'
 
-import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/store/auth'
 import { Plane, User, LogOut } from 'lucide-react'
@@ -9,17 +8,16 @@ import { Plane, User, LogOut } from 'lucide-react'
 const NO_HEADER_PAGES = ['/login', '/register'];
 
 export function Header() {
-  const router = useRouter()
+  const navigate = useNavigate()
+  const location = useLocation()
   const { user, isAuthenticated, logout } = useAuthStore()
 
   const handleLogout = () => {
     logout()
-    router.push('/')
+    navigate('/')
   }
 
-  const pathname = usePathname();
-
-  if (NO_HEADER_PAGES.includes(pathname)) {
+  if (NO_HEADER_PAGES.includes(location.pathname)) {
     return null;
   }
 
@@ -28,7 +26,7 @@ export function Header() {
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2">
+            <Link to="/" className="flex items-center space-x-2">
               <Plane className="h-8 w-8 text-blue-600" />
               <span className="text-xl font-bold text-gray-900">FlightBooker</span>
             </Link>
@@ -36,14 +34,14 @@ export function Header() {
 
           <nav className="hidden md:flex space-x-8">
             <Link 
-              href="/" 
+              to="/flights" 
               className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium"
             >
               Search Flights
             </Link>
             {isAuthenticated && (
               <Link 
-                href="/my-bookings" 
+                to="/my-bookings" 
                 className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium"
               >
                 My Bookings
@@ -51,7 +49,7 @@ export function Header() {
             )}
             {user?.role === 'ROLE_ADMIN' && (
               <Link 
-                href="/admin" 
+                to="/admin" 
                 className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium"
               >
                 Admin
@@ -59,7 +57,7 @@ export function Header() {
             )}
             {user?.role === 'ROLE_AIRLINE_STAFF' && (
               <Link 
-                href="/staff" 
+                to="/staff" 
                 className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium"
               >
                 Staff Portal
@@ -87,10 +85,10 @@ export function Header() {
             ) : (
               <div className="flex items-center space-x-2">
                 <Button variant="secondary" asChild>
-                  <Link href="/login">Login</Link>
+                  <Link to="/login">Login</Link>
                 </Button>
                 <Button asChild>
-                  <Link href="/register">Sign Up</Link>
+                  <Link to="/register">Sign Up</Link>
                 </Button>
               </div>
             )}

@@ -1,5 +1,5 @@
 import { create } from 'zustand'
-import { Flight, FlightSearchParams, Airport, Airline } from '@/types'
+import type { Flight, FlightSearchParams, Airport, Airline } from '@/types'
 import { apiClient } from '@/lib/api'
 
 interface FlightState {
@@ -40,21 +40,13 @@ export const useFlightStore = create<FlightState>((set) => ({
   },
 
   fetchAirports: async () => {
-    try {
-      const response = await apiClient.get<Airport[]>('/airports/')
-      set({ airports: response.data })
-    } catch (error) {
-      throw error
-    }
+    const response = await apiClient.get<Airport[]>('/airports/')
+    set({ airports: response.data })
   },
 
   fetchAirlines: async () => {
-    try {
-      const response = await apiClient.get<Airline[]>('/airlines/')
-      set({ airlines: response.data })
-    } catch (error) {
-      throw error
-    }
+    const response = await apiClient.get<Airline[]>('/airlines/')
+    set({ airlines: response.data })
   },
 
   clearFlights: () => {
