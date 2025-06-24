@@ -32,6 +32,7 @@ export function AirportManagement() {
   const [creating, setCreating] = useState(false)
   const [showMap, setShowMap] = useState(false)
   const [showAllAirports, setShowAllAirports] = useState(false)
+  const [selectedAirport, setSelectedAirport] = useState<Airport | null>(null)
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -84,6 +85,14 @@ export function AirportManagement() {
     } catch (error) {
       console.error('Error deleting airport:', error)
       alert('Failed to delete airport. It might be in use.')
+    }
+  }
+
+  const handleAirportSelect = (airport: Airport) => {
+    if (selectedAirport?.code === airport.code) {
+      setSelectedAirport(null)
+    } else {
+      setSelectedAirport(airport)
     }
   }
 
@@ -141,7 +150,7 @@ export function AirportManagement() {
             </div>
 
             <div className="mb-6">
-              <AirportVisualiser airports={airports} />
+              <AirportVisualiser airports={airports} selectedAirport={selectedAirport} handleSelectAirport={handleAirportSelect} />
             </div>
 
             {/* Airports List */}
@@ -167,17 +176,15 @@ export function AirportManagement() {
                         <div className="w-10 flex items-center justify-center">
                           <Badge variant="secondary" className="font-mono">
                             {airport.code}
-                          </Badge>
+                          </Badge>  
                         </div>
                         <div>
                           <div className="font-medium">{airport.name}</div>
                           <div className="text-sm text-gray-600">
                             {airport.city}, {airport.country}
-                            {airport.latitude && airport.longitude && (
-                              <span className="ml-2 text-xs text-blue-600">
+                              <Button variant="link" size="sm" className="ml-2 text-xs text-blue-600" onClick={() => handleAirportSelect(airport)}>
                                 📍 {airport.latitude.toFixed(4)}, {airport.longitude.toFixed(4)}
-                              </span>
-                            )}
+                              </Button>
                           </div>
                         </div>
                       </div>

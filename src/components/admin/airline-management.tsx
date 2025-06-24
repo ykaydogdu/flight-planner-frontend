@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { 
+import {
   AlertDialog,
   AlertDialogAction,
   AlertDialogCancel,
@@ -21,7 +21,8 @@ export function AirlineManagement() {
   const { airlines, loading, createAirline, deleteAirline } = useAirlineStore()
   const [newAirline, setNewAirline] = useState<Omit<Airline, 'id'>>({
     code: '',
-    name: ''
+    name: '',
+    staffCount: 0
   })
   const [creating, setCreating] = useState(false)
 
@@ -35,7 +36,7 @@ export function AirlineManagement() {
     setCreating(true)
     try {
       await createAirline(newAirline)
-      setNewAirline({ code: '', name: '' })
+      setNewAirline({ code: '', name: '', staffCount: 0 })
       alert('Airline created successfully!')
     } catch (error) {
       console.error('Error creating airline:', error)
@@ -91,7 +92,7 @@ export function AirlineManagement() {
         {/* Airlines List */}
         <div className="space-y-3">
           <h3 className="font-semibold">Existing Airlines ({airlines.length})</h3>
-          
+
           {loading ? (
             <div className="text-center py-8">Loading airlines...</div>
           ) : airlines.length === 0 ? (
@@ -106,9 +107,14 @@ export function AirlineManagement() {
                         {airline.code}
                       </Badge>
                     </div>
-                    <span className="font-medium">{airline.name}</span>
+                    <div>
+                      <div className="font-medium">{airline.name}</div>
+                      <div className="text-sm text-gray-600">
+                        {airline.staffCount} staff
+                      </div>
+                    </div>
                   </div>
-                  
+
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="destructive" size="sm">
@@ -119,7 +125,7 @@ export function AirlineManagement() {
                       <AlertDialogHeader>
                         <AlertDialogTitle>Delete Airline</AlertDialogTitle>
                         <AlertDialogDescription>
-                          Are you sure you want to delete airline "{airline.name}" ({airline.code})? 
+                          Are you sure you want to delete airline "{airline.name}" ({airline.code})?
                           This action cannot be undone and may affect existing flights and user assignments.
                         </AlertDialogDescription>
                       </AlertDialogHeader>

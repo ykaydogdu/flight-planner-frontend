@@ -27,6 +27,7 @@ export interface Airport {
 export interface Airline {
   code: string
   name: string
+  staffCount: number
 }
 
 export interface Flight {
