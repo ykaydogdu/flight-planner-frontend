@@ -33,7 +33,8 @@ export function AirportManagement() {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!newAirport.code.trim() || !newAirport.name.trim() || !newAirport.city.trim() || !newAirport.country.trim()) {
+    // if (!newAirport.code.trim() || !newAirport.name.trim() || !newAirport.city.trim() || !newAirport.country.trim()) {
+    if (!newAirport.code.trim() || !newAirport.name.trim()) {
       alert('Please fill in all fields')
       return
     }
@@ -116,7 +117,7 @@ export function AirportManagement() {
                   />
                 </div>
                 <div className="flex gap-3">
-                  <Input
+                  {/* <Input
                     placeholder="City (e.g., New York)"
                     value={newAirport.city}
                     onChange={(e) => setNewAirport({ ...newAirport, city: e.target.value })}
@@ -129,7 +130,7 @@ export function AirportManagement() {
                     onChange={(e) => setNewAirport({ ...newAirport, country: e.target.value })}
                     className="flex-1"
                     required
-                  />
+                  /> */}
                   <Button type="submit" disabled={creating}>
                     Next: Select Location
                   </Button>
@@ -224,7 +225,6 @@ export function AirportManagement() {
             <MapLocationPicker
               onLocationSelect={handleLocationSelect}
               onCancel={handleCancelMap}
-              initialCenter={[40.7128, -74.0060]} // Default to NYC, could be improved with geocoding
             />
           </div>
         )}
