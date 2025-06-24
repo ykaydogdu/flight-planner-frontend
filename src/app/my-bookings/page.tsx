@@ -1,5 +1,3 @@
-'use client'
-
 import { useEffect } from 'react'
 import { useBookingStore } from '@/store/bookings'
 import { BookingCard } from '@/components/booking/booking-card'

@@ -1,5 +1,3 @@
-'use client'
-
 import type { Booking } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
@@ -31,6 +29,7 @@ export function BookingCard({ booking }: BookingCardProps) {
       await cancelBooking(booking.id)
       // Optionally show a success toast
     } catch (error) {
+      console.error('Error cancelling booking:', error)
       // Optionally show an error toast
     }
   }
