@@ -17,6 +17,7 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import type { Airport } from '@/types'
+import { AirportVisualiser } from './airport-visualiser'
 
 export function AirportManagement() {
   const { airports, loading, createAirport, deleteAirport } = useAirportStore()
@@ -25,11 +26,12 @@ export function AirportManagement() {
     name: '',
     city: '',
     country: '',
-    latitude: undefined,
-    longitude: undefined
+    latitude: 0,
+    longitude: 0
   })
   const [creating, setCreating] = useState(false)
   const [showMap, setShowMap] = useState(false)
+  const [showAllAirports, setShowAllAirports] = useState(false)
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -58,8 +60,8 @@ export function AirportManagement() {
         name: '', 
         city: '', 
         country: '', 
-        latitude: undefined, 
-        longitude: undefined 
+        latitude: 0, 
+        longitude: 0 
       })
       setShowMap(false)
       alert('Airport created successfully!')
@@ -138,6 +140,10 @@ export function AirportManagement() {
               </form>
             </div>
 
+            <div className="mb-6">
+              <AirportVisualiser airports={airports} />
+            </div>
+
             {/* Airports List */}
             <div className="space-y-3">
               <h3 className="font-semibold">Existing Airports ({airports.length})</h3>
@@ -148,10 +154,17 @@ export function AirportManagement() {
                 <div className="text-center py-8 text-gray-500">No airports found</div>
               ) : (
                 <div className="grid gap-3">
-                  {airports.map((airport) => (
+                  <Button 
+                    variant="ghost" 
+                    className="w-full" 
+                    onClick={() => setShowAllAirports(!showAllAirports)}
+                  >
+                    {showAllAirports ? "Show Less" : "Show All"}
+                  </Button>
+                  {airports.slice(0, showAllAirports ? airports.length : 3).map((airport) => (
                     <div key={airport.code} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center gap-3">
-                        <Badge variant="outline" className="font-mono">
+                        <Badge variant="secondaryOutline" className="font-mono">
                           {airport.code}
                         </Badge>
                         <div>
@@ -198,14 +211,6 @@ export function AirportManagement() {
         ) : (
           <div className="space-y-4">
             <div className="flex items-center gap-2">
-              <Button 
-                variant="outline" 
-                size="sm" 
-                onClick={handleCancelMap}
-                className="flex items-center gap-2"
-              >
-                ← Back
-              </Button>
               <h3 className="font-semibold">
                 Select Location for {newAirport.name} ({newAirport.code})
               </h3>
@@ -218,7 +223,6 @@ export function AirportManagement() {
               <div className="text-sm text-blue-700">
                 <div><strong>Code:</strong> {newAirport.code}</div>
                 <div><strong>Name:</strong> {newAirport.name}</div>
-                <div><strong>Location:</strong> {newAirport.city}, {newAirport.country}</div>
               </div>
             </div>
 

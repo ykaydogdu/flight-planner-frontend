@@ -20,8 +20,8 @@ export interface Airport {
   name: string
   city: string
   country: string
-  latitude?: number
-  longitude?: number
+  latitude: number
+  longitude: number
 }
 
 export interface Airline {
