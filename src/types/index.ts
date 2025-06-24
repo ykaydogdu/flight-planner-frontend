@@ -1,8 +1,8 @@
 export interface User {
-  id: number
   username: string
   email: string
   role: 'ROLE_USER' | 'ROLE_AIRLINE_STAFF' | 'ROLE_ADMIN'
+  airline?: Airline | null
 }
 
 export interface AuthRequest {
@@ -20,6 +20,8 @@ export interface Airport {
   name: string
   city: string
   country: string
+  latitude?: number
+  longitude?: number
 }
 
 export interface Airline {

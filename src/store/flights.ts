@@ -24,7 +24,7 @@ export const useFlightStore = create<FlightState>((set) => ({
   searchFlights: async (params: FlightSearchParams) => {
     set({ loading: true, searchParams: params })
     try {
-      const response = await apiClient.get<Flight[]>('/flights/', {
+      const response = await apiClient.get<Flight[]>('/flights', {
         params: {
           origin: params.origin,
           destination: params.destination,
@@ -40,12 +40,12 @@ export const useFlightStore = create<FlightState>((set) => ({
   },
 
   fetchAirports: async () => {
-    const response = await apiClient.get<Airport[]>('/airports/')
+    const response = await apiClient.get<Airport[]>('/airports')
     set({ airports: response.data })
   },
 
   fetchAirlines: async () => {
-    const response = await apiClient.get<Airline[]>('/airlines/')
+    const response = await apiClient.get<Airline[]>('/airlines')
     set({ airlines: response.data })
   },
 
