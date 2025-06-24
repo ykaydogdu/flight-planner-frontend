@@ -104,8 +104,10 @@ export default function FlightsPage() {
   return (
     <div className="relative min-h-screen overflow-hidden">
       {/* Blurred Background */}
-      <div className="absolute inset-0 bg-cover bg-center blur-sm" style={{ backgroundImage: `url(${backgroundImage})` }} />
-      <div className="absolute inset-0 bg-white/40 backdrop-blur-sm" /> 
+      <div className="fixed inset-0 -z-10">
+        <div className="absolute inset-0 bg-cover bg-center blur-sm" style={{ backgroundImage: `url(${backgroundImage})` }} />
+        <div className="absolute inset-0 bg-white/40 backdrop-blur-sm" />
+      </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}

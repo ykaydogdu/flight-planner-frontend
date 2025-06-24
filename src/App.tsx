@@ -13,14 +13,16 @@ function App() {
   return (
     <div className="min-h-screen">
       <Header />
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/flights" element={<FlightsPage />} />
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/my-bookings" element={<MyBookingsPage />} />
-        <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
-      </Routes>
+      <div className="pt-16">
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/flights" element={<FlightsPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/my-bookings" element={<MyBookingsPage />} />
+          <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
+        </Routes>
+      </div>
     </div>
   )
 }
