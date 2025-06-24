@@ -10,6 +10,7 @@ interface AuthState {
   login: (credentials: AuthRequest) => Promise<void>
   logout: () => void
   register: (data: { username: string; email: string; password: string }) => Promise<void>
+  fetchUser: () => Promise<void>
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -35,6 +36,16 @@ export const useAuthStore = create<AuthState>()(
       register: async (data: { username: string; email: string; password: string }) => {
         await apiClient.post('/auth/register', data)
       },
+
+      fetchUser: async () => {
+        const token = localStorage.getItem('auth-token')
+        if (!token) {
+          return
+        }
+
+        const response = await apiClient.get<User>('/auth/me')
+        set({ user: response.data })
+      }
     }),
     {
       name: 'auth-storage',
