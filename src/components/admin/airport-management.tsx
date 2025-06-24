@@ -164,9 +164,11 @@ export function AirportManagement() {
                   {airports.slice(0, showAllAirports ? airports.length : 3).map((airport) => (
                     <div key={airport.code} className="flex items-center justify-between p-3 border rounded-lg">
                       <div className="flex items-center gap-3">
-                        <Badge variant="secondaryOutline" className="font-mono">
-                          {airport.code}
-                        </Badge>
+                        <div className="w-10 flex items-center justify-center">
+                          <Badge variant="secondary" className="font-mono">
+                            {airport.code}
+                          </Badge>
+                        </div>
                         <div>
                           <div className="font-medium">{airport.name}</div>
                           <div className="text-sm text-gray-600">

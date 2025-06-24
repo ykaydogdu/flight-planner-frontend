@@ -59,7 +59,7 @@ export default function AdminDashboardPage() {
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
+        <div className="mb-4">
           <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
             Admin Dashboard
           </h1>
@@ -68,7 +68,7 @@ export default function AdminDashboardPage() {
           {/* Dashboard Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
             <Card>
-              <CardContent className="p-6">
+              <CardContent>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                     👥
@@ -82,7 +82,7 @@ export default function AdminDashboardPage() {
             </Card>
 
             <Card>
-              <CardContent className="p-6">
+              <CardContent>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                     ✈️
@@ -96,7 +96,7 @@ export default function AdminDashboardPage() {
             </Card>
 
             <Card>
-              <CardContent className="p-6">
+              <CardContent>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
                     🏢
@@ -110,7 +110,7 @@ export default function AdminDashboardPage() {
             </Card>
 
             <Card>
-              <CardContent className="p-6">
+              <CardContent>
                 <div className="flex items-center gap-3">
                   <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
                     ⚠️
@@ -126,8 +126,8 @@ export default function AdminDashboardPage() {
         </div>
 
         {/* Tab Navigation */}
-        <div className="mb-6">
-          <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+        <div className="mb-4">
+          <div className="flex space-x-1 bg-gray-100 rounded-lg p-1 text-secondary-foreground">
             <Button
               variant={activeTab === 'users' ? 'default' : 'ghost'}
               onClick={() => setActiveTab('users')}

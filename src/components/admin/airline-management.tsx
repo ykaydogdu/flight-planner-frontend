@@ -101,9 +101,11 @@ export function AirlineManagement() {
               {airlines.map((airline) => (
                 <div key={airline.code} className="flex items-center justify-between p-3 border rounded-lg">
                   <div className="flex items-center gap-3">
-                    <Badge variant="secondaryOutline" className="font-mono">
-                      {airline.code}
-                    </Badge>
+                    <div className="w-10 flex items-center justify-center">
+                      <Badge variant="secondary" className="font-mono">
+                        {airline.code}
+                      </Badge>
+                    </div>
                     <span className="font-medium">{airline.name}</span>
                   </div>
                   
