@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { useFlightStore } from '@/store/flights'
-import type { FlightSearchParams } from '@/types'
+import type { FlightSearchParams, Airport } from '@/types'
 import { Search, MapPin, Calendar, Users, Plane } from 'lucide-react'
 
 const flightSearchSchema = z.object({
@@ -20,6 +20,15 @@ const flightSearchSchema = z.object({
 
 type FlightSearchFormData = z.infer<typeof flightSearchSchema>
 
+const getNearestAirport = async (latitude: number, longitude: number, airports: Airport[]) => {
+  const nearestAirport = airports.reduce((prev, curr) => {
+    const prevDistance = Math.sqrt(Math.pow(prev.latitude - latitude, 2) + Math.pow(prev.longitude - longitude, 2))
+    const currDistance = Math.sqrt(Math.pow(curr.latitude - latitude, 2) + Math.pow(curr.longitude - longitude, 2))
+    return prevDistance < currDistance ? prev : curr
+  })
+  return nearestAirport
+}
+
 export function FlightSearchForm() {
   const navigate = useNavigate()
   const { searchFlights, fetchAirports, fetchAirlines, airports, airlines, loading } = useFlightStore()
@@ -27,6 +36,7 @@ export function FlightSearchForm() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<FlightSearchFormData>({
     resolver: zodResolver(flightSearchSchema),
@@ -41,14 +51,27 @@ export function FlightSearchForm() {
     fetchAirlines()
   }, [fetchAirports, fetchAirlines])
 
+  const handleUseNearestAirport = (type: 'origin' | 'destination') => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(async position => {
+        const nearestAirport = getNearestAirport(position.coords.latitude, position.coords.longitude, airports)
+        setValue(type, "Loading...")
+        nearestAirport.then(airport => {
+          setValue(type, airport.name)
+        })
+      })
+    } else {
+      console.error('Geolocation is not supported by this browser.')
+    }
+  }
+
   const onSubmit = async (data: FlightSearchFormData) => {
     try {
       const searchParams: FlightSearchParams = {
-        origin: data.origin,
-        destination: data.destination,
+        originAirportCode: data.origin,
+        destinationAirportCode: data.destination,
         departureDate: data.departureDate,
-        passengers: data.passengers,
-        airline: data.airline,
+        airlineCode: data.airline,
       }
 
       await searchFlights(searchParams)
@@ -65,10 +88,19 @@ export function FlightSearchForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Origin */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 flex items-center">
-                <MapPin className="h-4 w-4 mr-1" />
-                From
-              </label>
+              <div className="flex items-center">
+                <label className="text-sm font-medium text-gray-700 flex items-center">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  From •
+                </label>
+                <button
+                  type="button"
+                  onClick={() => handleUseNearestAirport('origin')}
+                  className="text-sm text-blue-600 hover:text-blue-800 underline cursor-pointer ml-1"
+                >
+                  Use nearest airport
+                </button>
+              </div>
               <Input
                 {...register('origin')}
                 placeholder="Origin airport"
@@ -92,10 +124,19 @@ export function FlightSearchForm() {
 
             {/* Destination */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 flex items-center">
-                <MapPin className="h-4 w-4 mr-1" />
-                To
-              </label>
+              <div className="flex items-center">
+                <label className="text-sm font-medium text-gray-700 flex items-center">
+                  <MapPin className="h-4 w-4 mr-1" />
+                  To •
+                </label>
+                <button
+                  type="button"
+                  onClick={() => handleUseNearestAirport('destination')}
+                  className="text-sm text-blue-600 hover:text-blue-800 underline cursor-pointer ml-1"
+                >
+                  Use nearest airport
+                </button>
+              </div>
               <Input
                 {...register('destination')}
                 placeholder="Destination airport"
