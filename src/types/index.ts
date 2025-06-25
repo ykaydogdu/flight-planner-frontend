@@ -33,20 +33,21 @@ export interface Airline {
 export interface Flight {
   id: number
   price: number
+  seatCount: number
   emptySeats: number
   departureTime: string
-  arrivalTime?: string
+  duration: number
+  arrivalTime: string // departureTime + duration adjusted for timezone (handled by backend)
   airline: Airline
   originAirport: Airport
   destinationAirport: Airport
 }
 
 export interface FlightSearchParams {
-  origin: string
-  destination: string
+  airlineCode: string
+  originAirportCode: string
+  destinationAirportCode: string
   departureDate: string
-  passengers: number
-  airline: string
 }
 
 export interface Booking {

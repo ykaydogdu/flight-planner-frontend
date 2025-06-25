@@ -55,10 +55,10 @@ export function Header() {
             )}
             {user?.role === 'ROLE_AIRLINE_STAFF' && (
               <Link 
-                to="/staff" 
+                to="/staff-dashboard" 
                 className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium"
               >
-                Staff Portal
+                Staff Dashboard
               </Link>
             )}
           </nav>

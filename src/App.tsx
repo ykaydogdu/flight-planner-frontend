@@ -8,6 +8,7 @@ import LoginPage from '@/app/login/page'
 import RegisterPage from '@/app/register/page'
 import MyBookingsPage from '@/app/my-bookings/page'
 import AdminDashboardPage from './app/admin-dashboard/page'
+import StaffDashboardPage from './app/staff-dashboard/page'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/my-bookings" element={<MyBookingsPage />} />
           <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
+          <Route path="/staff-dashboard" element={<StaffDashboardPage />} />
         </Routes>
       </div>
     </div>
