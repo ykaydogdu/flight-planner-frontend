@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Search, SlidersHorizontal, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react'
 import { FlightSearchForm } from '@/components/forms/flight-search-form'
-import backgroundImage from '@/assets/background.jpeg'
 
 export default function FlightsPage() {
   const navigate = useNavigate()
@@ -64,7 +63,7 @@ export default function FlightsPage() {
 
   const formatSearchSummary = () => {
     if (!searchParams) return ''
-    return `${searchParams.origin} → ${searchParams.destination} • ${new Date(searchParams.departureDate).toLocaleDateString()} • ${searchParams.passengers} passenger${searchParams.passengers > 1 ? 's' : ''}`
+    return `${searchParams.originAirportCode} → ${searchParams.destinationAirportCode} • ${new Date(searchParams.departureDate || '').toLocaleDateString()}`
   }
 
   if (loading) {
@@ -103,13 +102,7 @@ export default function FlightsPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Blurred Background */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-cover bg-center blur-sm" style={{ backgroundImage: `url(${backgroundImage})` }} />
-        <div className="absolute inset-0 bg-white/40 backdrop-blur-sm" />
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
@@ -239,7 +232,7 @@ export default function FlightsPage() {
                 <FlightCard
                   key={flight.id}
                   flight={flight}
-                  passengers={searchParams?.passengers || 1}
+                  passengers={1}
                 />
               ))}
             </div>

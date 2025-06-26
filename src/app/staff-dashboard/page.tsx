@@ -3,10 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/auth'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { FlightManagement } from '@/components/staff/flight-management'
 import { FlightBookingsView } from '@/components/staff/flight-bookings-view'
-import backgroundImage from '@/assets/background.jpeg'
 
 export default function StaffDashboardPage() {
   const navigate = useNavigate()
@@ -32,13 +30,7 @@ export default function StaffDashboardPage() {
 
   return (
     <div className="relative min-h-screen overflow-hidden">
-      {/* Blurred Background */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-cover bg-center blur-sm" style={{ backgroundImage: `url(${backgroundImage})` }} />
-        <div className="absolute inset-0 bg-white/40 backdrop-blur-sm" />
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-4">
           <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
             Staff Dashboard

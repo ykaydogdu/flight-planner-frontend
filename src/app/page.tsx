@@ -3,7 +3,7 @@ import { Plane, Clock, Shield, Star } from 'lucide-react'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-blue-600 to-blue-800 text-white">
         <div className="absolute inset-0 bg-black opacity-20"></div>
@@ -28,7 +28,7 @@ export default function HomePage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-16 bg-white">
+      <section className="py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-900">
@@ -92,7 +92,7 @@ export default function HomePage() {
       </section>
 
       {/* Popular Destinations */}
-      <section className="py-16 bg-gray-50">
+      <section className="py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-gray-900">
