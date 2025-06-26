@@ -9,17 +9,16 @@ import {
   MapPin,
   Users,
   DollarSign,
-  ChevronDown,
-  ChevronUp,
   Calendar,
 } from 'lucide-react'
+import React from 'react'
 
 interface FlightCardProps {
   flight: Flight
   passengers: number
 }
 
-export function FlightCard({ flight, passengers }: FlightCardProps) {
+export const FlightCard = React.memo(function FlightCard({ flight, passengers }: FlightCardProps) {
   const navigate = useNavigate()
   const [showDetails, setShowDetails] = useState(false)
 
@@ -32,19 +31,17 @@ export function FlightCard({ flight, passengers }: FlightCardProps) {
   }
 
   const formatDate = (dateTime: string) => {
-    return new Date(dateTime).toLocaleDateString([], {
+    const date = new Date(dateTime)
+    return date.toLocaleDateString([], {
       month: 'short',
-      day: 'numeric'
+      day: 'numeric',
+      ...(date.getFullYear() !== new Date().getFullYear() && { year: 'numeric' })
     })
   }
 
   const calculateDuration = () => {
-    const departure = new Date(flight.departureTime).getTime()
-    const arrival = new Date(flight.arrivalTime || flight.departureTime).getTime()
-    const durationMs = arrival - departure
-    
-    const hours = Math.floor(durationMs / (1000 * 60 * 60))
-    const minutes = Math.floor((durationMs % (1000 * 60 * 60)) / (1000 * 60))
+    const hours = Math.floor(flight.duration / 60)
+    const minutes = Math.floor(flight.duration % 60)
     
     return `${hours}h ${minutes}m`
   }
@@ -68,7 +65,7 @@ export function FlightCard({ flight, passengers }: FlightCardProps) {
   }
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-200 border border-gray-200">
+    <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-200 border border-gray-200" onClick={() => setShowDetails(!showDetails)}>
       <CardContent className="p-0">
         {/* Main Flight Info */}
         <div className="p-6">
@@ -106,8 +103,8 @@ export function FlightCard({ flight, passengers }: FlightCardProps) {
                   <div className="text-sm font-medium text-gray-700 mt-1">
                     {flight.originAirport.code}
                   </div>
-                  <div className="text-xs text-gray-500 truncate max-w-20">
-                    {flight.originAirport.city}
+                  <div className="text-xs text-gray-500 truncate">
+                    {flight.originAirport.city}, {flight.originAirport.country}
                   </div>
                 </div>
 
@@ -137,8 +134,8 @@ export function FlightCard({ flight, passengers }: FlightCardProps) {
                   <div className="text-sm font-medium text-gray-700 mt-1">
                     {flight.destinationAirport.code}
                   </div>
-                  <div className="text-xs text-gray-500 truncate max-w-20">
-                    {flight.destinationAirport.city}
+                  <div className="text-xs text-gray-500 truncate">
+                    {flight.destinationAirport.city}, {flight.destinationAirport.country}
                   </div>
                 </div>
               </div>
@@ -174,22 +171,6 @@ export function FlightCard({ flight, passengers }: FlightCardProps) {
                 </Button>
               </div>
             </div>
-          </div>
-
-          {/* Show Details Button */}
-          <div className="mt-4 pt-4 border-t border-gray-100">
-            <Button
-              variant="ghost"
-              onClick={() => setShowDetails(!showDetails)}
-              className="text-sm text-blue-600 hover:text-blue-800 p-0 h-auto"
-            >
-              {showDetails ? 'Hide Details' : 'Show Details'}
-              {showDetails ? (
-                <ChevronUp className="h-4 w-4 ml-1" />
-              ) : (
-                <ChevronDown className="h-4 w-4 ml-1" />
-              )}
-            </Button>
           </div>
         </div>
 
@@ -315,4 +296,4 @@ export function FlightCard({ flight, passengers }: FlightCardProps) {
       </CardContent>
     </Card>
   )
-} 
+})

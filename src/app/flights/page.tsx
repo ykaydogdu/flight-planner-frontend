@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Search, SlidersHorizontal, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react'
 import { FlightSearchForm } from '@/components/forms/flight-search-form'
+import { motion } from 'motion/react'
 
 export default function FlightsPage() {
   const navigate = useNavigate()
@@ -19,11 +20,6 @@ export default function FlightsPage() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
 
   useEffect(() => {
-    // Don't redirect if no search params - show the search form instead
-    if (!searchParams && !loading) {
-      setShowSearchForm(true)
-    }
-
     const sorted = [...flights]
     switch (sortBy) {
       case 'price':
@@ -63,12 +59,13 @@ export default function FlightsPage() {
 
   const formatSearchSummary = () => {
     if (!searchParams) return ''
-    return `${searchParams.originAirportCode} → ${searchParams.destinationAirportCode} • ${new Date(searchParams.departureDate || '').toLocaleDateString()}`
+    return `${searchParams.originAirportCode} → ${searchParams.destinationAirportCode} • ${(searchParams.departureDate !== undefined) ? new Date(searchParams.departureDate).toLocaleDateString() : 'Any'}`
   }
+
 
   if (loading) {
     return (
-      <div className="relative min-h-screen overflow-hidden bg-gray-50">
+      <div className="relative min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="mb-6">
             <div className="h-4 bg-gray-200 rounded w-64 animate-pulse mb-2"></div>
@@ -101,7 +98,7 @@ export default function FlightsPage() {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
+    <div className="relative min-h-screen">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-6">
@@ -118,6 +115,7 @@ export default function FlightsPage() {
                 size="sm"
                 onClick={() => setShowSearchForm(!showSearchForm)}
                 className="flex items-center"
+                disabled={!searchParams}
               >
                 <Search className="h-4 w-4 mr-2" />
                 {showSearchForm ? 'Hide Search' : 'Modify Search'}
@@ -127,7 +125,7 @@ export default function FlightsPage() {
                   <ChevronDown className="h-4 w-4 ml-1" />
                 )}
               </Button>
-              
+
               <Button
                 variant="outline"
                 size="sm"
@@ -139,9 +137,42 @@ export default function FlightsPage() {
               </Button>
             </div>
           </div>
+        </div>
 
-          {flights.length > 0 && (
-            <div className="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm">
+        {/* Search Form Section */}
+        {(showSearchForm || (!searchParams && !loading)) && (
+          <motion.div
+            key="search-form"
+            layout
+            initial={{ opacity: 0, y: -100 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <div className="mb-8">
+              <Card className="shadow-lg border-blue-200">
+                <CardContent>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xl font-semibold text-gray-900 flex items-center">
+                      <Search className="h-5 w-5 mr-2 text-blue-600" />
+                      {searchParams ? 'Modify Your Search' : 'Search Flights'}
+                    </h2>
+                  </div>
+                  <FlightSearchForm />
+                </CardContent>
+              </Card>
+            </div>
+          </motion.div>
+        )}
+
+        {flights.length > 0 && (
+          <motion.div
+            key="filters"
+            layout
+            initial={{ opacity: 0, y: -100 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <div className="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm mb-6">
               <p className="text-sm text-gray-600">
                 {filteredFlights.length} of {flights.length} flights found
               </p>
@@ -159,39 +190,12 @@ export default function FlightsPage() {
                 ))}
               </div>
             </div>
-          )}
-        </div>
-
-        {/* Search Form Section */}
-        {(showSearchForm || (!searchParams && !loading)) && (
-          <div className="mb-8">
-            <Card className="shadow-lg border-blue-200">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-                    <Search className="h-5 w-5 mr-2 text-blue-600" />
-                    {searchParams ? 'Modify Your Search' : 'Search Flights'}
-                  </h2>
-                  {searchParams && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowSearchForm(false)}
-                      className="text-gray-600 hover:text-gray-800"
-                    >
-                      <ChevronUp className="h-4 w-4" />
-                    </Button>
-                  )}
-                </div>
-                <FlightSearchForm />
-              </CardContent>
-            </Card>
-          </div>
+          </motion.div>
         )}
 
-        <div className="flex flex-col lg:flex-row gap-6">
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
           {showFilters && (
-            <div className="lg:w-80">
+            <div className="lg:w-80 sticky top-20 self-start">
               <FlightFilters flights={flights} onFilterChange={handleFilterChange} />
             </div>
           )}
@@ -227,15 +231,23 @@ export default function FlightsPage() {
               </Card>
             )}
 
-            <div className="space-y-4">
-              {filteredFlights.map((flight) => (
-                <FlightCard
-                  key={flight.id}
-                  flight={flight}
-                  passengers={1}
-                />
-              ))}
-            </div>
+            <motion.div
+              key="flights"
+              layout
+              initial={{ opacity: 0, y: -100 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="space-y-4">
+                {filteredFlights.map((flight) => (
+                  <FlightCard
+                    key={flight.id}
+                    flight={flight}
+                    passengers={1}
+                  />
+                ))}  
+              </div>
+            </motion.div>
           </div>
         </div>
       </div>

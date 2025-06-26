@@ -1,5 +1,7 @@
 export interface User {
   username: string
+  firstName: string
+  lastName: string
   email: string
   role: 'ROLE_USER' | 'ROLE_AIRLINE_STAFF' | 'ROLE_ADMIN'
   airline?: Airline | null
@@ -44,10 +46,10 @@ export interface Flight {
 }
 
 export interface FlightSearchParams {
-  airlineCode: string
+  airlineCode?: string
   originAirportCode: string
   destinationAirportCode: string
-  departureDate: string
+  departureDate?: string
 }
 
 export interface Booking {

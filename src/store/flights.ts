@@ -25,12 +25,7 @@ export const useFlightStore = create<FlightState>((set) => ({
     set({ loading: true, searchParams: params })
     try {
       const response = await apiClient.get<Flight[]>('/flights', {
-        params: {
-          airlineCode: params.airlineCode,
-          originAirportCode: params.originAirportCode,
-          destinationAirportCode: params.destinationAirportCode,
-          departureDate: params.departureDate,
-        },
+        params: params,
       })
       set({ flights: response.data, loading: false })
     } catch (error) {

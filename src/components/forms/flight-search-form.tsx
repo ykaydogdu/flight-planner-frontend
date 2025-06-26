@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -7,31 +7,94 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
 import { useFlightStore } from '@/store/flights'
-import type { FlightSearchParams, Airport } from '@/types'
+import type { FlightSearchParams, Airport, Airline } from '@/types'
 import { Search, MapPin, Calendar, Users, Plane } from 'lucide-react'
 
-const flightSearchSchema = z.object({
-  origin: z.string().min(3, 'Please select an origin airport'),
-  destination: z.string().min(3, 'Please select a destination airport'),
-  departureDate: z.string(),
+const flightSearchSchema = (airports: Airport[], airlines: Airline[], anyDate: boolean) => z.object({
+  origin: z.string()
+    .min(1, 'Please select an origin airport')
+    .refine(val => airports.some(a => a.name === val), 'Please select a valid origin airport from the list.'),
+  destination: z.string()
+    .min(1, 'Please select a destination airport')
+    .refine(val => airports.some(a => a.name === val), 'Please select a valid destination airport from the list.'),
+  departureDate: z.string().optional(),
   passengers: z.number().min(1).max(9),
-  airline: z.string()
-})
+  airline: z.string().optional().refine(
+    (val) => !val || airlines.some(a => a.name === val),
+    'Please select a valid airline or leave empty.'
+  )
+}).superRefine(
+  (data, ctx) => {
+    if(data.origin && data.destination && data.origin === data.destination) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Origin and destination cannot be the same',
+        path: ['destination'],
+      })
+    }
 
-type FlightSearchFormData = z.infer<typeof flightSearchSchema>
+    if (!anyDate && data.departureDate == "") {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Please select a departure date or click "Any" to search for flights on any date',
+        path: ['departureDate'],
+      })
+    }
+  }
+)
 
-const getNearestAirport = async (latitude: number, longitude: number, airports: Airport[]) => {
-  const nearestAirport = airports.reduce((prev, curr) => {
-    const prevDistance = Math.sqrt(Math.pow(prev.latitude - latitude, 2) + Math.pow(prev.longitude - longitude, 2))
-    const currDistance = Math.sqrt(Math.pow(curr.latitude - latitude, 2) + Math.pow(curr.longitude - longitude, 2))
-    return prevDistance < currDistance ? prev : curr
-  })
-  return nearestAirport
-}
+type FlightSearchFormData = z.infer<ReturnType<typeof flightSearchSchema>>
+
+// Function to convert degrees to radians
+const toRadians = (deg: number): number => deg * (Math.PI / 180);
+const getNearestAirportHaversine = async (
+  latitude: number,
+  longitude: number,
+  airports: Airport[]
+): Promise<Airport> => {
+  if (airports.length === 0) {
+    throw new Error("Airport list cannot be empty.");
+  }
+
+  const R = 6371; // Radius of Earth in kilometers (use 3958.8 for miles)
+
+  const latRad = toRadians(latitude);
+  const lonRad = toRadians(longitude);
+
+  let nearestAirport = airports[0];
+  let minDistance = Infinity;
+
+  // Optimized Haversine calculation
+  for (const airport of airports) {
+    const airportLatRad = toRadians(airport.latitude);
+    const airportLonRad = toRadians(airport.longitude);
+
+    const dLat = airportLatRad - latRad;
+    const dLon = airportLonRad - lonRad;
+
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(latRad) * Math.cos(airportLatRad) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    const distance = R * c; // Distance in kilometers
+
+    if (distance < minDistance) {
+      minDistance = distance;
+      nearestAirport = airport;
+    }
+  }
+
+  return nearestAirport;
+};
 
 export function FlightSearchForm() {
   const navigate = useNavigate()
   const { searchFlights, fetchAirports, fetchAirlines, airports, airlines, loading } = useFlightStore()
+  const [anyDate, setAnyDate] = useState<boolean>(false);
+  const [loadingAirport, setLoadingAirport] = useState<boolean>(false);
 
   const {
     register,
@@ -39,10 +102,9 @@ export function FlightSearchForm() {
     setValue,
     formState: { errors },
   } = useForm<FlightSearchFormData>({
-    resolver: zodResolver(flightSearchSchema),
+    resolver: zodResolver(flightSearchSchema(airports, airlines, anyDate)),
     defaultValues: {
       passengers: 1,
-      departureDate: new Date().toISOString().split('T')[0],
     },
   })
 
@@ -53,12 +115,11 @@ export function FlightSearchForm() {
 
   const handleUseNearestAirport = (type: 'origin' | 'destination') => {
     if (navigator.geolocation) {
+      setLoadingAirport(true)
       navigator.geolocation.getCurrentPosition(async position => {
-        const nearestAirport = getNearestAirport(position.coords.latitude, position.coords.longitude, airports)
-        setValue(type, "Loading...")
-        nearestAirport.then(airport => {
-          setValue(type, airport.name)
-        })
+        const nearestAirport = await getNearestAirportHaversine(position.coords.latitude, position.coords.longitude, airports)
+        setValue(type, nearestAirport.name)
+        setLoadingAirport(false)
       })
     } else {
       console.error('Geolocation is not supported by this browser.')
@@ -67,14 +128,24 @@ export function FlightSearchForm() {
 
   const onSubmit = async (data: FlightSearchFormData) => {
     try {
-      const searchParams: FlightSearchParams = {
-        originAirportCode: data.origin,
-        destinationAirportCode: data.destination,
-        departureDate: data.departureDate,
-        airlineCode: data.airline,
+      const originAirport = airports.find(a => a.name === data.origin)
+      const destinationAirport = airports.find(a => a.name === data.destination)
+      const airline = data.airline ? airlines.find(a => a.name === data.airline) : undefined
+
+      if (!originAirport || !destinationAirport) {
+        // This should be caught by validation, but as a safeguard
+        console.error('Invalid airport name selected')
+        return;
       }
 
-      await searchFlights(searchParams)
+      const searchParams: FlightSearchParams = {
+        originAirportCode: originAirport.code,
+        destinationAirportCode: destinationAirport.code,
+        ...(data.departureDate && { departureDate: data.departureDate }),
+        ...(airline && { airlineCode: airline.code }),
+      }
+
+      searchFlights(searchParams)
       navigate('/flights')
     } catch (error) {
       console.error('Search error:', error)
@@ -97,8 +168,9 @@ export function FlightSearchForm() {
                   type="button"
                   onClick={() => handleUseNearestAirport('origin')}
                   className="text-sm text-blue-600 hover:text-blue-800 underline cursor-pointer ml-1"
+                  disabled={loadingAirport}
                 >
-                  Use nearest airport
+                  {loadingAirport ? 'Loading...' : 'Use nearest airport'}
                 </button>
               </div>
               <Input
@@ -133,8 +205,9 @@ export function FlightSearchForm() {
                   type="button"
                   onClick={() => handleUseNearestAirport('destination')}
                   className="text-sm text-blue-600 hover:text-blue-800 underline cursor-pointer ml-1"
+                  disabled={loadingAirport}
                 >
-                  Use nearest airport
+                  {loadingAirport ? 'Loading...' : 'Use nearest airport'}
                 </button>
               </div>
               <Input
@@ -162,15 +235,25 @@ export function FlightSearchForm() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Departure Date */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 flex items-center">
-                <Calendar className="h-4 w-4 mr-1" />
-                Departure
-              </label>
+            <div className="flex items-center">
+                <label className="text-sm font-medium text-gray-700 flex items-center">
+                  <Calendar className="h-4 w-4 mr-1" />
+                  Departure •
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setAnyDate(!anyDate)}
+                  className="text-sm text-blue-600 hover:text-blue-800 underline cursor-pointer ml-1"
+                >
+                  {anyDate ? 'Select Date' : 'Any'}
+                </button>
+              </div>
               <Input
                 type="date"
                 {...register('departureDate')}
-                min={new Date().toLocaleDateString("tr-TR", { year: 'numeric', month: '2-digit', day: '2-digit' })}
+                min={new Date().toISOString().split("T")[0]}
                 className={errors.departureDate ? 'border-red-500' : ''}
+                disabled={anyDate}
               />
               {errors.departureDate && (
                 <p className="text-sm text-red-500">{errors.departureDate.message}</p>
@@ -203,7 +286,7 @@ export function FlightSearchForm() {
               </label>
               <Input
                 {...register('airline')}
-                placeholder="Airline"
+                placeholder="Any"
                 className={errors.airline ? 'border-red-500' : ''}
                 list="airline"
               />
