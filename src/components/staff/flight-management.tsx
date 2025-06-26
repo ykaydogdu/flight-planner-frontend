@@ -71,10 +71,7 @@ export function FlightManagement() {
   useEffect(() => {
     setLoading(true)
     searchFlights({
-      airlineCode: user?.airline?.code || '',
-      originAirportCode: '',
-      destinationAirportCode: '',
-      departureDate: '' 
+      airlineCode: user?.airline?.code
     }).finally(() => {
       setLoading(false)
     })
@@ -143,7 +140,7 @@ export function FlightManagement() {
     } catch (error) {
       console.error('Error deleting flight:', error)
       alert('Failed to delete flight. Please try again.')
-    }
+    } 
   }
 
   const handleOriginLocationSelect = (latitude: number, longitude: number) => {

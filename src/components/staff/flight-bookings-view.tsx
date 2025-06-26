@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useAuthStore } from '@/store/auth'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -36,11 +36,7 @@ export function FlightBookingsView() {
   const [expandedFlights, setExpandedFlights] = useState<Set<number>>(new Set())
   const [searchTerm, setSearchTerm] = useState('')
 
-  useEffect(() => {
-    fetchFlightsWithBookings()
-  }, [])
-
-  const fetchFlightsWithBookings = async () => {
+  const fetchFlightsWithBookings = useCallback(async () => {
     if (!user?.airline?.code) return
 
     try {
@@ -64,7 +60,11 @@ export function FlightBookingsView() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [user?.airline?.code])
+
+  useEffect(() => {
+    fetchFlightsWithBookings()
+  }, [fetchFlightsWithBookings])
 
   const toggleFlightExpansion = (flightId: number) => {
     const newExpanded = new Set(expandedFlights)
