@@ -9,6 +9,7 @@ import RegisterPage from '@/app/register/page'
 import MyBookingsPage from '@/app/my-bookings/page'
 import AdminDashboardPage from './app/admin-dashboard/page'
 import StaffDashboardPage from './app/staff-dashboard/page'
+import BookingPage from './app/booking/page'
 import backgroundImage from '@/assets/background.jpeg'
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
             <Route path="/my-bookings" element={<MyBookingsPage />} />
             <Route path="/admin-dashboard" element={<AdminDashboardPage />} />
             <Route path="/staff-dashboard" element={<StaffDashboardPage />} />
+            <Route path="/booking/:flightId" element={<BookingPage />} />
           </Routes>
         </div>
       </div>

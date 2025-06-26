@@ -60,7 +60,8 @@ export const FlightCard = React.memo(function FlightCard({ flight, passengers }:
 
   const totalPrice = flight.price * passengers
 
-  const handleBooking = () => {
+  const handleBooking = (e: React.MouseEvent) => {
+    e.stopPropagation()
     navigate(`/booking/${flight.id}?passengers=${passengers}`)
   }
 

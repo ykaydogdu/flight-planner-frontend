@@ -9,6 +9,7 @@ interface FlightState {
   loading: boolean
   searchParams: Partial<FlightSearchParams> | null
   searchFlights: (params: Partial<FlightSearchParams>) => Promise<void>
+  fetchFlightById: (flightId: number) => Promise<Flight>
   fetchAirports: () => Promise<void>
   fetchAirlines: () => Promise<void>
   clearFlights: () => void
@@ -30,6 +31,16 @@ export const useFlightStore = create<FlightState>((set) => ({
       set({ flights: response.data, loading: false })
     } catch (error) {
       set({ loading: false })
+      throw error
+    }
+  },
+
+  fetchFlightById: async (flightId: number) => {
+    try {
+      const response = await apiClient.get<Flight>(`/flights/${flightId}`)
+      return response.data
+    } catch (error) {
+      console.error('Failed to fetch flight by ID', error)
       throw error
     }
   },
