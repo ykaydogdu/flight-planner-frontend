@@ -16,7 +16,7 @@ function App() {
   return (
     <div className="min-h-screen">
       <Header />
-      <div className="pt-16">
+      <div>
         {/* Blurred Background */}
         <div className="fixed inset-0 -z-10">
           <div className="absolute inset-0 bg-cover bg-center blur-sm" style={{ backgroundImage: `url(${backgroundImage})` }} />
