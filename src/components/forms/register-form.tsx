@@ -11,6 +11,8 @@ import { UserPlus, Loader2 } from 'lucide-react'
 
 const registerSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters'),
+  firstName: z.string().min(3, 'First name must be at least 3 characters'),
+  lastName: z.string().min(3, 'Last name must be at least 3 characters'),
   email: z.string().email('Please enter a valid email address'),
   password: z.string().min(6, 'Password must be at least 6 characters'),
   confirmPassword: z.string(),
@@ -43,6 +45,8 @@ export function RegisterForm() {
     try {
       await registerUser({
         username: data.username,
+        firstName: data.firstName,
+        lastName: data.lastName,
         email: data.email,
         password: data.password,
       })
@@ -109,6 +113,34 @@ export function RegisterForm() {
             />
             {errors.username && (
               <p className="text-sm text-red-500">{errors.username.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              First Name
+            </label>
+            <Input
+              {...register('firstName')}
+              placeholder="Enter your first name"
+              className={errors.firstName ? 'border-red-500' : ''}
+            />
+            {errors.firstName && (
+              <p className="text-sm text-red-500">{errors.firstName.message}</p>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <label className="text-sm font-medium text-gray-700">
+              Last Name
+            </label>
+            <Input
+              {...register('lastName')}
+              placeholder="Enter your last name"
+              className={errors.lastName ? 'border-red-500' : ''}
+            />
+            {errors.lastName && (
+              <p className="text-sm text-red-500">{errors.lastName.message}</p>
             )}
           </div>
 
