@@ -42,10 +42,10 @@ export function BookingCard({ booking }: BookingCardProps) {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm text-gray-500">
-              {booking.flight.originAirport.city} → {booking.flight.destinationAirport.city}
+              {booking.originAirport.city} → {booking.destinationAirport.city}
             </p>
             <CardTitle className="text-2xl font-bold">
-              {booking.flight.airline.name}
+              {booking.airline.name}
             </CardTitle>
           </div>
           <div className="mt-2 sm:mt-0 flex items-center space-x-2">
@@ -54,7 +54,7 @@ export function BookingCard({ booking }: BookingCardProps) {
             </Badge>
             <p className="text-sm text-gray-600 flex items-center">
               <Hash className="h-4 w-4 mr-1" />
-              {booking.bookingReference}
+              {booking.id}
             </p>
           </div>
         </div>
@@ -65,21 +65,21 @@ export function BookingCard({ booking }: BookingCardProps) {
             <div className="flex items-center">
               <Plane className="h-5 w-5 mr-3 text-blue-600" />
               <div>
-                <p className="font-semibold">{`${booking.flight.originAirport.code} → ${booking.flight.destinationAirport.code}`}</p>
-                <p className="text-sm text-gray-500">{`${booking.flight.originAirport.name} to ${booking.flight.destinationAirport.name}`}</p>
+                <p className="font-semibold">{`${booking.originAirport.code} → ${booking.destinationAirport.code}`}</p>
+                <p className="text-sm text-gray-500">{`${booking.originAirport.name} to ${booking.destinationAirport.name}`}</p>
               </div>
             </div>
             <div className="flex items-center">
               <Calendar className="h-5 w-5 mr-3 text-blue-600" />
               <div>
-                <p className="font-semibold">{format(new Date(booking.flight.departureTime), 'EEE, MMM d, yyyy')}</p>
+                <p className="font-semibold">{format(new Date(booking.departureTime), 'EEE, MMM d, yyyy')}</p>
                 <p className="text-sm text-gray-500">Departure Date</p>
               </div>
             </div>
             <div className="flex items-center">
               <Clock className="h-5 w-5 mr-3 text-blue-600" />
               <div>
-                <p className="font-semibold">{format(new Date(booking.flight.departureTime), 'h:mm a')}</p>
+                <p className="font-semibold">{format(new Date(booking.departureTime), 'h:mm a')}</p>
                 <p className="text-sm text-gray-500">Departure Time</p>
               </div>
             </div>
@@ -88,12 +88,13 @@ export function BookingCard({ booking }: BookingCardProps) {
             <div className="flex items-center">
               <User className="h-5 w-5 mr-3 text-blue-600" />
               <div>
-                <p className="font-semibold">{booking.passengerName}</p>
-                <p className="text-sm text-gray-500">{booking.passengerEmail}</p>
+                <p>User Info</p>
               </div>
             </div>
              <div className="flex items-center">
-                <p className="text-sm text-gray-500">Booked on {format(new Date(booking.bookingDate), 'MMM d, yyyy')}</p>
+                {/* <p className="text-sm text-gray-500">Booked on {format(new Date(booking.createdAt), 'MMM d, yyyy')}</p>
+                 */}
+                 <p>created at</p>
             </div>
           </div>
         </div>
@@ -122,7 +123,7 @@ export function BookingCard({ booking }: BookingCardProps) {
                     Are you sure?
                   </AlertDialogTitle>
                   <AlertDialogDescription>
-                    This action cannot be undone. This will permanently cancel your booking for flight {booking.flight.airline.name} from {booking.flight.originAirport.code} to {booking.flight.destinationAirport.code}.
+                    This action cannot be undone. This will permanently cancel your booking for flight with {booking.airline.name} from {booking.originAirport.name} to {booking.destinationAirport.name}.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>

@@ -32,6 +32,11 @@ export interface Airline {
   staffCount: number
 }
 
+export interface AirlineInfo {
+  code: string
+  name: string
+}
+
 export interface Flight {
   id: number
   price: number
@@ -40,7 +45,7 @@ export interface Flight {
   departureTime: string
   duration: number
   arrivalTime: string // departureTime + duration adjusted for timezone (handled by backend)
-  airline: Airline
+  airline: AirlineInfo
   originAirport: Airport
   destinationAirport: Airport
 }
@@ -54,17 +59,20 @@ export interface FlightSearchParams {
 
 export interface Booking {
   id: number
-  bookingReference: string
-  flight: Flight
-  user: User
-  passengerName: string
-  passengerEmail: string
+  flightId: number
+  price: number
+  numberOfSeats: number
+  airline: AirlineInfo
+  originAirport: Airport
+  destinationAirport: Airport
+  departureTime: string
+  duration: number
+  arrivalTime: string
   status: 'CONFIRMED' | 'CANCELLED'
-  bookingDate: string
 }
 
 export interface BookingRequest {
   flightId: number
-  passengerName: string
-  passengerEmail: string
+  username: string
+  numberOfSeats: number
 } 
