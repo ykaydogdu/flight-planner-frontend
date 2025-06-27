@@ -3,7 +3,7 @@ import { persist } from 'zustand/middleware'
 import type { User, AuthRequest, AuthResponse } from '@/types'
 import { apiClient } from '@/lib/api'
 
-interface AuthState {
+export interface AuthState {
   user: User | null
   token: string | null
   isAuthenticated: boolean

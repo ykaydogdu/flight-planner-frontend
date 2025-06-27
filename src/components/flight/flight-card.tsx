@@ -66,7 +66,11 @@ export const FlightCard = React.memo(function FlightCard({ flight, passengers }:
   }
 
   return (
-    <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-200 border border-gray-200" onClick={() => setShowDetails(!showDetails)}>
+    <Card 
+      data-testid="flight-card"
+      className="overflow-hidden hover:shadow-lg transition-shadow duration-200 border border-gray-200" 
+      onClick={() => setShowDetails(!showDetails)}
+    >
       <CardContent className="p-0">
         {/* Main Flight Info */}
         <div className="p-6">
