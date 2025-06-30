@@ -36,7 +36,7 @@ export function FlightFilters({ flights, onFilterChange }: FlightFiltersProps) {
   // Get unique airlines from flights
   const availableAirlines = flights.reduce((acc: Airline[], flight) => {
     if (!acc.find(airline => airline.code === flight.airline.code)) {
-      acc.push(flight.airline)
+      acc.push(flight.airline as Airline)
     }
     return acc
   }, [])
@@ -72,11 +72,8 @@ export function FlightFilters({ flights, onFilterChange }: FlightFiltersProps) {
       if (departureHour < filters.departureTimeRange[0] || departureHour > filters.departureTimeRange[1]) {
         return false
       }
-
-              // Duration filter
-        const departure = new Date(flight.departureTime).getTime()
-        const arrival = new Date(flight.arrivalTime || flight.departureTime).getTime()
-        const durationHours = (arrival - departure) / (1000 * 60 * 60)
+        // Duration filter
+        const durationHours = flight.duration / 60
       if (durationHours > filters.maxDuration) {
         return false
       }
