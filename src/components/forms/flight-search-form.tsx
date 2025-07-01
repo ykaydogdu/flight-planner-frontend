@@ -6,9 +6,10 @@ import { useNavigate } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent } from '@/components/ui/card'
+import { PassengerSelector } from './passenger-selector'
 import { useFlightStore } from '@/store/flights'
 import type { FlightSearchParams, Airport, Airline } from '@/types'
-import { Search, MapPin, Calendar, Users, Plane } from 'lucide-react'
+import { Search, MapPin, Calendar, Plane } from 'lucide-react'
 
 const flightSearchSchema = (airports: Airport[], airlines: Airline[], anyDate: boolean) => z.object({
   origin: z.string()
@@ -18,7 +19,17 @@ const flightSearchSchema = (airports: Airport[], airlines: Airline[], anyDate: b
     .min(1, 'Please select a destination airport')
     .refine(val => airports.some(a => a.name === val), 'Please select a valid destination airport from the list.'),
   departureDate: z.string().optional(),
-  passengers: z.number().min(1).max(9),
+  passengers: z.object({
+    economy: z.number().min(0),
+    business: z.number().min(0),
+    firstClass: z.number().min(0)
+  }).refine(
+    (data) => data.economy + data.business + data.firstClass >= 1,
+    'At least one passenger is required'
+  ).refine(
+    (data) => data.economy + data.business + data.firstClass <= 9,
+    'Maximum 9 passengers allowed'
+  ),
   airline: z.string().optional().refine(
     (val) => !val || airlines.some(a => a.name === val),
     'Please select a valid airline or leave empty.'
@@ -100,13 +111,20 @@ export function FlightSearchForm() {
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors },
   } = useForm<FlightSearchFormData>({
     resolver: zodResolver(flightSearchSchema(airports, airlines, anyDate)),
     defaultValues: {
-      passengers: 1,
+      passengers: {
+        economy: 1,
+        business: 0,
+        firstClass: 0
+      },
     },
   })
+
+  const passengers = watch('passengers')
 
   useEffect(() => {
     fetchAirports()
@@ -143,6 +161,9 @@ export function FlightSearchForm() {
         destinationAirportCode: destinationAirport.code,
         ...(data.departureDate && { departureDate: data.departureDate }),
         ...(airline && { airlineCode: airline.code }),
+        ...(data.passengers.economy > 0 && { passengerEconomy: data.passengers.economy }),
+        ...(data.passengers.business > 0 && { passengerBusiness: data.passengers.business }),
+        ...(data.passengers.firstClass > 0 && { passengerFirstClass: data.passengers.firstClass })
       }
 
       searchFlights(searchParams)
@@ -261,22 +282,11 @@ export function FlightSearchForm() {
             </div>
 
             {/* Passengers */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 flex items-center">
-                <Users className="h-4 w-4 mr-1" />
-                Passengers
-              </label>
-              <Input
-                type="number"
-                min="1"
-                max="9"
-                {...register('passengers', { valueAsNumber: true })}
-                className={errors.passengers ? 'border-red-500' : ''}
-              />
-              {errors.passengers && (
-                <p className="text-sm text-red-500">{errors.passengers.message}</p>
-              )}
-            </div>
+            <PassengerSelector
+              value={passengers}
+              onChange={(selection) => setValue('passengers', selection)}
+              error={errors.passengers?.message}
+            />
 
             {/* Airline */}
             <div className="space-y-2">

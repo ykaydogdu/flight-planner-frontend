@@ -37,6 +37,8 @@ export interface AirlineInfo {
   name: string
 }
 
+export type FlightClass = 'ECONOMY' | 'BUSINESS' | 'FIRST_CLASS'
+
 export interface Flight {
   id: number
   price: number
@@ -55,6 +57,9 @@ export interface FlightSearchParams {
   originAirportCode: string
   destinationAirportCode: string
   departureDate?: string
+  passengerEconomy?: number
+  passengerBusiness?: number
+  passengerFirstClass?: number
 }
 
 export interface Booking {
