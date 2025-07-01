@@ -14,7 +14,7 @@ vi.mock('react-router-dom', async () => {
 describe('FlightCard', () => {
   const mockFlight: Flight = {
     id: 1,
-    price: 200,
+    minPrice: 200,
     seatCount: 180,
     emptySeats: 25,
     departureTime: new Date('2025-01-01T10:00:00Z').toISOString(),
@@ -40,12 +40,13 @@ describe('FlightCard', () => {
       latitude: 0,
       longitude: 0,
     },
+    classes: [],
   }
 
   it('renders airline name and price per passenger', () => {
     render(
       <MemoryRouter>
-        <FlightCard flight={mockFlight} passengers={1} />
+        <FlightCard flight={mockFlight} economyPassengers={1} businessPassengers={0} firstClassPassengers={0} />
       </MemoryRouter>,
     )
 
@@ -56,7 +57,7 @@ describe('FlightCard', () => {
   it('shows expandable details when card is clicked', () => {
     render(
       <MemoryRouter>
-        <FlightCard flight={mockFlight} passengers={1} />
+        <FlightCard flight={mockFlight} economyPassengers={1} businessPassengers={0} firstClassPassengers={0} />
       </MemoryRouter>,
     )
 
@@ -72,7 +73,7 @@ describe('FlightCard', () => {
   it('navigates to booking page when "Select Flight" button is clicked', () => {
     render(
       <MemoryRouter>
-        <FlightCard flight={mockFlight} passengers={1} />
+        <FlightCard flight={mockFlight} economyPassengers={1} businessPassengers={0} firstClassPassengers={0} />
       </MemoryRouter>,
     )
 

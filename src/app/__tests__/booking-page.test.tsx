@@ -5,7 +5,7 @@ import type { Flight } from '@/types'
 // Create a sample flight
 const flightMock: Flight = {
   id: 1,
-  price: 150,
+  minPrice: 150,
   seatCount: 150,
   emptySeats: 150,
   departureTime: new Date().toISOString(),
@@ -14,6 +14,7 @@ const flightMock: Flight = {
   airline: { code: 'AA', name: 'Alpha Air' },
   originAirport: { code: 'AAA', name: 'Alpha', city: '', country: '', latitude: 0, longitude: 0 },
   destinationAirport: { code: 'BBB', name: 'Beta', city: '', country: '', latitude: 1, longitude: 1 },
+  classes: [],
 }
 
 const fetchFlightByIdMock = vi.fn(() => Promise.resolve(flightMock))
@@ -51,15 +52,15 @@ vi.mock('react-router-dom', async () => {
 
 // Stub icons & UI primitives used heavily
 vi.mock('lucide-react', () => new Proxy({}, { get: () => () => <span /> }))
-vi.mock('@/components/ui/input', () => ({ Input: (props: any) => <input {...props} /> }))
-vi.mock('@/components/ui/button', () => ({ Button: (props: any) => <button {...props}>{props.children}</button> }))
+vi.mock('@/components/ui/input', () => ({ Input: (props: React.InputHTMLAttributes<HTMLInputElement>) => <input {...props} /> }))
+vi.mock('@/components/ui/button', () => ({ Button: (props: React.ButtonHTMLAttributes<HTMLButtonElement>) => <button {...props}>{props.children}</button> }))
 vi.mock('@/components/ui/card', () => ({
-  Card: ({ children }: any) => <div>{children}</div>,
-  CardHeader: ({ children }: any) => <div>{children}</div>,
-  CardContent: ({ children }: any) => <div>{children}</div>,
-  CardTitle: ({ children }: any) => <h2>{children}</h2>,
+  Card: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  CardHeader: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  CardContent: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  CardTitle: ({ children }: { children: React.ReactNode }) => <h2>{children}</h2>,
 }))
-vi.mock('@/components/ui/badge', () => ({ Badge: ({ children }: any) => <span>{children}</span> }))
+vi.mock('@/components/ui/badge', () => ({ Badge: ({ children }: { children: React.ReactNode }) => <span>{children}</span> }))
 
 import BookingPage from '../booking/page'
 

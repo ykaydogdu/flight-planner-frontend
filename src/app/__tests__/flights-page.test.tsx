@@ -25,9 +25,9 @@ const mockAirports: Airport[] = [
 ]
 
 const mockFlights: Flight[] = [
-    { id: 1, airline: { code: 'BA', name: 'British Airways' }, originAirport: mockAirports[0], destinationAirport: mockAirports[1], departureTime: '2024-08-01T10:00:00Z', arrivalTime: '2024-08-01T13:00:00Z', price: 500, emptySeats: 100, duration: 180, seatCount: 200 },
-    { id: 2, airline: { code: 'AA', name: 'American Airlines' }, originAirport: mockAirports[0], destinationAirport: mockAirports[1], departureTime: '2024-08-01T12:00:00Z', arrivalTime: '2024-08-01T15:00:00Z', price: 450, emptySeats: 120, duration: 180, seatCount: 200 },
-    { id: 3, airline: { code: 'VS', name: 'Virgin Atlantic' }, originAirport: mockAirports[0], destinationAirport: mockAirports[1], departureTime: '2024-08-01T09:00:00Z', arrivalTime: '2024-08-01T12:00:00Z', price: 550, emptySeats: 80, duration: 180, seatCount: 200 },
+    { id: 1, airline: { code: 'BA', name: 'British Airways' }, originAirport: mockAirports[0], destinationAirport: mockAirports[1], departureTime: '2024-08-01T10:00:00Z', arrivalTime: '2024-08-01T13:00:00Z', minPrice: 500, emptySeats: 100, duration: 180, seatCount: 200, classes: [] },
+    { id: 2, airline: { code: 'AA', name: 'American Airlines' }, originAirport: mockAirports[0], destinationAirport: mockAirports[1], departureTime: '2024-08-01T12:00:00Z', arrivalTime: '2024-08-01T15:00:00Z', minPrice: 450, emptySeats: 120, duration: 180, seatCount: 200, classes: [] },
+    { id: 3, airline: { code: 'VS', name: 'Virgin Atlantic' }, originAirport: mockAirports[0], destinationAirport: mockAirports[1], departureTime: '2024-08-01T09:00:00Z', arrivalTime: '2024-08-01T12:00:00Z', minPrice: 550, emptySeats: 80, duration: 180, seatCount: 200, classes: [] },
 ]
 
 const searchParams = {

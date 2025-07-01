@@ -8,8 +8,8 @@ const onFilterChangeMock = vi.fn()
 const flightsMock: Flight[] = [
   {
     id: 1,
-    price: 100,
-    seatCount: 100,
+    minPrice: 100,
+    seatCount: 100, 
     emptySeats: 50,
     departureTime: new Date('2025-01-01T08:00:00Z').toISOString(),
     duration: 60,
@@ -31,10 +31,11 @@ const flightsMock: Flight[] = [
       latitude: 0,
       longitude: 0,
     },
+    classes: [],
   },
   {
     id: 2,
-    price: 500,
+    minPrice: 500,
     seatCount: 100,
     emptySeats: 20,
     departureTime: new Date('2025-01-01T20:00:00Z').toISOString(),
@@ -57,6 +58,7 @@ const flightsMock: Flight[] = [
       latitude: 0,
       longitude: 0,
     },
+    classes: [],
   },
 ]
 

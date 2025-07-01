@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react'
 import { vi } from 'vitest'
-import type { Booking } from '@/types'
+import type { Booking, FlightClassType } from '@/types'
 
 vi.mock('@/components/booking/booking-card', () => ({
   BookingCard: () => <div data-testid="booking-card" />,
@@ -9,16 +9,21 @@ vi.mock('@/components/booking/booking-card', () => ({
 const bookingsMock: Booking[] = [
   {
     id: 1,
-    flightId: 1,
-    price: 100,
-    numberOfSeats: 1,
+    passengers: [{
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@example.com',
+      flightClass: 'ECONOMY' as FlightClassType,
+      priceAtBooking: 100,
+    }],
+    bookingDate: new Date().toISOString(),
     airline: { code: 'AA', name: 'Alpha Air' },
     originAirport: { code: 'AAA', name: 'Alpha', city: '', country: '', latitude: 0, longitude: 0 },
     destinationAirport: { code: 'BBB', name: 'Beta', city: '', country: '', latitude: 1, longitude: 1 },
     departureTime: new Date().toISOString(),
     duration: 120,
     arrivalTime: new Date().toISOString(),
-    status: 'CONFIRMED',
+    status: 'ACTIVE', 
   },
 ]
 

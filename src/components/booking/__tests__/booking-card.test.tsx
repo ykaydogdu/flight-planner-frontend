@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { BookingCard } from '../booking-card'
 import { MemoryRouter } from 'react-router-dom'
 import { vi } from 'vitest'
-import type { Booking } from '@/types'
+import type { Booking, FlightClassType } from '@/types'
 
 const cancelBookingMock = vi.fn(() => Promise.resolve())
 
@@ -15,9 +15,14 @@ vi.mock('@/store/bookings', () => ({
 describe('BookingCard', () => {
   const mockBooking: Booking = {
     id: 123,
-    flightId: 1,
-    price: 200,
-    numberOfSeats: 2,
+    passengers: [{
+      firstName: 'John',
+      lastName: 'Doe',
+      email: 'john.doe@example.com',
+      flightClass: 'ECONOMY' as FlightClassType,
+      priceAtBooking: 100,
+    }],
+    bookingDate: new Date().toISOString(),
     airline: {
       code: 'EX',
       name: 'Example Air',
@@ -41,7 +46,7 @@ describe('BookingCard', () => {
     departureTime: new Date('2025-01-01T10:00:00Z').toISOString(),
     duration: 120,
     arrivalTime: new Date('2025-01-01T12:00:00Z').toISOString(),
-    status: 'CONFIRMED',
+    status: 'ACTIVE',
   }
 
   it('renders booking information', () => {
