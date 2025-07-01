@@ -7,7 +7,16 @@ interface BookingState {
   loading: boolean
   fetchBookings: () => Promise<void>
   cancelBooking: (bookingId: number) => Promise<void>
-  createBooking: (bookingRequest: { flightId: number, username: string, numberOfSeats: number }) => Promise<Booking>
+  createBooking: (bookingRequest: {
+    flightId: number,
+    username: string,
+    passengers: {
+      firstName: string,
+      lastName: string,
+      email: string,
+      flightClass: 'ECONOMY' | 'BUSINESS' | 'FIRST_CLASS'
+    }[]
+  }) => Promise<Booking>
 }
 
 export const useBookingStore = create<BookingState>((set, get) => ({
@@ -37,7 +46,7 @@ export const useBookingStore = create<BookingState>((set, get) => ({
     }
   },
 
-  createBooking: async (bookingRequest: { flightId: number, username: string, numberOfSeats: number }) => {
+  createBooking: async (bookingRequest) => {
     try {
       const response = await apiClient.post('/bookings/create', bookingRequest)
       return response.data

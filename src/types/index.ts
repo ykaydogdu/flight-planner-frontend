@@ -87,5 +87,13 @@ export interface Booking {
 export interface BookingRequest {
   flightId: number
   username: string
-  numberOfSeats: number
-} 
+  passengers: Passenger[]
+}
+
+export interface Passenger {
+  firstName: string
+  lastName: string
+  email: string
+  flightClass: FlightClassType
+  priceAtBooking: number
+}

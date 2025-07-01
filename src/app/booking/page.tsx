@@ -4,10 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Plane, 
-  Users, 
-  User, 
+import {
+  Plane,
+  Users,
+  User,
   CreditCard,
   ArrowLeft,
   Check
@@ -16,7 +16,7 @@ import { format } from 'date-fns'
 import { useAuthStore } from '@/store/auth'
 import { useBookingStore } from '@/store/bookings'
 import { useFlightStore } from '@/store/flights'
-import type { Flight } from '@/types'
+import type { Flight, Passenger } from '@/types'
 
 export default function BookingPage() {
   const { flightId } = useParams<{ flightId: string }>()
@@ -32,12 +32,17 @@ export default function BookingPage() {
   const [bookingSuccess, setBookingSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  const passengers = parseInt(searchParams.get('passengers') || '1')
-  
-  const [formData, setFormData] = useState({
-    passengerName: user?.firstName + ' ' + user?.lastName || '',
-    passengerEmail: user?.email || '',
-  })
+  const passengerEconomy = parseInt(searchParams.get('passengerEconomy') || '0')
+  const passengerBusiness = parseInt(searchParams.get('passengerBusiness') || '0')
+  const passengerFirstClass = parseInt(searchParams.get('passengerFirstClass') || '0')
+  const passengers = {
+    "ECONOMY": passengerEconomy,
+    "BUSINESS": passengerBusiness,
+    "FIRST_CLASS": passengerFirstClass
+  }
+  const totalPassengers = passengerEconomy + passengerBusiness + passengerFirstClass
+
+  const [passengersData, setPassengersData] = useState<Passenger[]>([])
 
   // Redirect to login if not authenticated
   useEffect(() => {
@@ -47,11 +52,39 @@ export default function BookingPage() {
     }
   }, [isAuthenticated, navigate])
 
+  // Set passenger data
+  useEffect(() => {
+    const passengerCounts = [
+      { flightClass: 'ECONOMY' as const, count: passengerEconomy },
+      { flightClass: 'BUSINESS' as const, count: passengerBusiness },
+      { flightClass: 'FIRST_CLASS' as const, count: passengerFirstClass }
+    ]
+
+    const initialPassengers = passengerCounts.flatMap(({ flightClass, count }) =>
+      Array.from({ length: count }, () => ({
+        firstName: '',
+        lastName: '',
+        email: '',
+        flightClass: flightClass,
+        priceAtBooking: 0
+      }))
+    )
+
+    // Prefill first passenger with user data
+    if (initialPassengers.length > 0 && user) {
+      initialPassengers[0].firstName = user.firstName || ''
+      initialPassengers[0].lastName = user.lastName || ''
+      initialPassengers[0].email = user.email || ''
+    }
+    setPassengersData(initialPassengers)
+
+  }, [passengerEconomy, passengerBusiness, passengerFirstClass, user])
+
   // Fetch flight details
   useEffect(() => {
     const fetchFlight = async () => {
       if (!flightId) return
-      
+
       try {
         setLoading(true)
         const flightData = await fetchFlightById(parseInt(flightId))
@@ -68,10 +101,10 @@ export default function BookingPage() {
   }, [flightId, fetchFlightById])
 
   const formatTime = (dateTime: string) => {
-    return new Date(dateTime).toLocaleTimeString([], { 
-      hour: '2-digit', 
+    return new Date(dateTime).toLocaleTimeString([], {
+      hour: '2-digit',
       minute: '2-digit',
-      hour12: true 
+      hour12: true
     })
   }
 
@@ -86,29 +119,35 @@ export default function BookingPage() {
     return `${hours}h ${minutes}m`
   }
 
-  const totalPrice = flight ? flight.price * passengers : 0
+  const economyPrice = (flight?.classes.find(c => c.flightClass === 'ECONOMY')?.price || 0) * passengerEconomy
+  const businessPrice = (flight?.classes.find(c => c.flightClass === 'BUSINESS')?.price || 0) * passengerBusiness
+  const firstClassPrice = (flight?.classes.find(c => c.flightClass === 'FIRST_CLASS')?.price || 0) * passengerFirstClass
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const totalPrice = economyPrice + businessPrice + firstClassPrice
+
+  const handleInputChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }))
+    setPassengersData(prev => {
+      const updatedPassengers = [...prev]
+      updatedPassengers[index] = { ...updatedPassengers[index], [name]: value }
+      return updatedPassengers
+    })
   }
 
   const handleBooking = async () => {
     if (!flight || !user) return
 
     // Basic validation
-    if (!formData.passengerName.trim() || !formData.passengerEmail.trim()) {
-      setError('Please fill in all required fields')
-      return
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(formData.passengerEmail)) {
-      setError('Please enter a valid email address')
-      return
+    for (const passenger of passengersData) {
+      if (!passenger.firstName.trim() || !passenger.lastName.trim() || !passenger.email.trim()) {
+        setError('Please fill in all required fields for all passengers')
+        return
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      if (!emailRegex.test(passenger.email)) {
+        setError(`Please enter a valid email address for ${passenger.firstName} ${passenger.lastName}`)
+        return
+      }
     }
 
     try {
@@ -118,7 +157,7 @@ export default function BookingPage() {
       const bookingRequest = {
         flightId: flight.id,
         username: user.username,
-        numberOfSeats: passengers
+        passengers: passengersData
       }
 
       await createBooking(bookingRequest)
@@ -155,8 +194,8 @@ export default function BookingPage() {
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-red-50 border border-red-200 rounded-lg p-6">
             <p className="text-red-800">{error}</p>
-            <Button 
-              onClick={() => navigate('/flights')} 
+            <Button
+              onClick={() => navigate('/flights')}
               className="mt-4"
               variant="outline"
             >
@@ -184,9 +223,9 @@ export default function BookingPage() {
                 <Button onClick={() => navigate('/my-bookings')} className="w-full">
                   View My Bookings
                 </Button>
-                <Button 
-                  onClick={() => navigate('/flights')} 
-                  variant="outline" 
+                <Button
+                  onClick={() => navigate('/flights')}
+                  variant="outline"
                   className="w-full"
                 >
                   Book Another Flight
@@ -206,9 +245,9 @@ export default function BookingPage() {
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex items-center mb-6">
-          <Button 
-            onClick={() => navigate('/flights')} 
-            variant="ghost" 
+          <Button
+            onClick={() => navigate('/flights')}
+            variant="ghost"
             className="mr-4"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -281,37 +320,82 @@ export default function BookingPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Full Name *
-                    </label>
-                    <Input
-                      type="text"
-                      name="passengerName"
-                      value={formData.passengerName}
-                      onChange={handleInputChange}
-                      placeholder="Enter full name"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Email Address *
-                    </label>
-                    <Input
-                      type="email"
-                      name="passengerEmail"
-                      value={formData.passengerEmail}
-                      onChange={handleInputChange}
-                      placeholder="Enter email address"
-                      required
-                    />
-                  </div>
-                </div>
+                {/* Passenger Information Form */}
+                {Object.entries(passengers).map(([flightClass, passengerCount]) => {
+                  if (passengerCount === 0) return null
+
+                  const classPassengers = passengersData.filter(p => p.flightClass === flightClass)
+                  const originalIndices = classPassengers.map(p => passengersData.indexOf(p))
+
+                  return (
+                    <div key={flightClass}>
+                      <label className="block text-sm font-semibold  text-gray-700 mb-1">
+                        {flightClass.charAt(0).toUpperCase() + flightClass.toLowerCase().slice(1).replace("_", " ")} Class x {passengerCount}
+                      </label>
+                      {Array.from({ length: passengerCount }).map((_, index) => {
+                        const passengerIndex = originalIndices[index]
+                        const passenger = passengersData[passengerIndex]
+
+                        return (
+                          <div key={passengerIndex}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  First Name
+                                </label>
+                                <Input
+                                  type="text"
+                                  name="firstName"
+                                  value={passenger?.firstName || ''}
+                                  onChange={(e) => handleInputChange(passengerIndex, e)}
+                                  placeholder="Enter first name"
+                                  required
+                                />
+                              </div>
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Last Name
+                                </label>
+                                <Input
+                                  type="text"
+                                  name="lastName"
+                                  value={passenger?.lastName || ''}
+                                  onChange={(e) => handleInputChange(passengerIndex, e)}
+                                  placeholder="Enter last name"
+                                  required
+                                />
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                  Email Address
+                                </label>
+                                <Input
+                                  type="email"
+                                  name="email"
+                                  value={passenger?.email || ''}
+                                  onChange={(e) => handleInputChange(passengerIndex, e)}
+                                  placeholder="Enter email address"
+                                  required
+                                />
+                              </div>
+                            </div>
+                            {/* Place if not last passenger */}
+                            {index !== passengerCount - 1 && (
+                              <div className="h-px bg-gray-200 my-4" />
+                            )}
+                          </div>
+                        )
+                      })}
+                      <div className="h-px bg-gray-400 my-4" />
+                    </div>
+                  )
+                })}
+
                 <div className="flex items-center space-x-2 text-sm text-gray-600">
                   <Users className="h-4 w-4" />
-                  <span>{passengers} passenger{passengers > 1 ? 's' : ''}</span>
+                  <span>{totalPassengers} passenger{totalPassengers > 1 ? 's' : ''}</span>
                 </div>
               </CardContent>
             </Card>
@@ -342,18 +426,26 @@ export default function BookingPage() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-gray-600">Passengers</span>
-                    <span className="font-medium">{passengers}</span>
+                    <span className="font-medium">{totalPassengers}</span>
                   </div>
                 </div>
 
                 <div className="border-t pt-4 space-y-2">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Price per ticket</span>
-                    <span className="font-medium">${flight.price.toLocaleString()}</span>
+                    <span className="text-gray-600">Economy Class x {passengerEconomy}</span>
+                    <span className="font-medium">${economyPrice.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Business Class x {passengerBusiness}</span>
+                    <span className="font-medium">${businessPrice.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">First Class x {passengerFirstClass}</span>
+                    <span className="font-medium">${firstClassPrice.toLocaleString()}</span>
                   </div>
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
-                    <span className="text-blue-600">${totalPrice.toLocaleString()}</span>
+                    <span className="text-blue-600">${totalPrice?.toLocaleString()}</span>
                   </div>
                 </div>
 
@@ -363,12 +455,12 @@ export default function BookingPage() {
                   </div>
                 )}
 
-                <Button 
+                <Button
                   onClick={handleBooking}
-                  disabled={booking || flight.emptySeats < passengers}
+                  disabled={booking || flight.emptySeats < totalPassengers}
                   className="w-full bg-blue-600 hover:bg-blue-700"
                 >
-                  {booking ? 'Processing...' : `Confirm Booking - $${totalPrice.toLocaleString()}`}
+                  {booking ? 'Processing...' : `Confirm Booking - $${totalPrice?.toLocaleString()}`}
                 </Button>
 
                 <p className="text-xs text-gray-500 text-center">
