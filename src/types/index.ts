@@ -97,3 +97,9 @@ export interface Passenger {
   flightClass: FlightClassType
   priceAtBooking: number
 }
+
+export interface PassengerSelection {
+  economy: number
+  business: number
+  firstClass: number
+}

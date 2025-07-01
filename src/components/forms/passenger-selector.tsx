@@ -41,7 +41,7 @@ export function PassengerSelector({ value, onChange, error }: PassengerSelectorP
   const handleIncrement = (type: keyof PassengerSelection) => {
     const newValue = tempSelection[type] + 1
     if (getTotalPassengers({ ...tempSelection, [type]: newValue }) <= 9) {
-      setTempSelection(prev => ({
+      setTempSelection((prev: PassengerSelection) => ({
         ...prev,
         [type]: newValue
       }))
@@ -50,7 +50,7 @@ export function PassengerSelector({ value, onChange, error }: PassengerSelectorP
 
   const handleDecrement = (type: keyof PassengerSelection) => {
     const newValue = Math.max(0, tempSelection[type] - 1)
-    setTempSelection(prev => ({
+    setTempSelection((prev: PassengerSelection) => ({
       ...prev,
       [type]: newValue
     }))
