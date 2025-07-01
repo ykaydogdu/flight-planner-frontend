@@ -68,6 +68,7 @@ export interface FlightSearchParams {
   passengerEconomy?: number
   passengerBusiness?: number
   passengerFirstClass?: number
+  includePast?: boolean
 }
 
 export interface Booking {

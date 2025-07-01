@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useAuthStore } from '@/store/auth'
-import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { FlightManagement } from '@/components/staff/flight-management'
-import { FlightBookingsView } from '@/components/staff/flight-bookings-view'
-import { DollarSign, Users, Plane } from 'lucide-react'
+import { DollarSign, Users, Plane, TicketCheck } from 'lucide-react'
 
 export default function StaffDashboardPage() {
   const navigate = useNavigate()
   const { user } = useAuthStore()
-  const [activeTab, setActiveTab] = useState<'bookings' | 'flights'>('bookings')
   const [overallStats, setOverallStats] = useState({
     activeFlights: 0,
     overallBookingCount: 0,
@@ -66,7 +63,7 @@ export default function StaffDashboardPage() {
                     <p className="text-sm font-medium text-gray-600">Total Bookings</p>
                     <p className="text-2xl font-bold">{overallStats.overallBookingCount}</p>
                   </div>
-                  <Users className="h-8 w-8 text-green-600" />
+                  <TicketCheck className="h-8 w-8 text-green-600" />
                 </div>
               </CardContent>
             </Card>
@@ -96,29 +93,7 @@ export default function StaffDashboardPage() {
             </Card>
           </div>
 
-          {/* Tab Navigation */}
-          <div className="mb-4">
-            <div className="flex space-x-1 bg-gray-100 rounded-lg p-1 text-secondary-foreground">
-              <Button
-                variant={activeTab === 'bookings' ? 'default' : 'ghost'}
-                onClick={() => setActiveTab('bookings')}
-                className="flex-1"
-              >
-                📊 Flight Bookings
-              </Button>
-              <Button
-                variant={activeTab === 'flights' ? 'default' : 'ghost'}
-                onClick={() => setActiveTab('flights')}
-                className="flex-1"
-              >
-                ✈️ Flight Management
-              </Button>
-            </div>
-          </div>
-
-          {/* Tab Content */}
-          {activeTab === 'flights' && <FlightManagement />}
-          {activeTab === 'bookings' && <FlightBookingsView setOverallStats={setOverallStats} />}
+          <FlightManagement setOverallStats={setOverallStats} />
         </div>
       </div>
     </div>
