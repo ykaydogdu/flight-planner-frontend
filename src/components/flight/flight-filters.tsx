@@ -43,7 +43,7 @@ export function FlightFilters({ flights, onFilterChange }: FlightFiltersProps) {
 
   // Calculate price range from flights
   const priceRange = flights.length > 0 
-    ? [Math.min(...flights.map(f => f.price)), Math.max(...flights.map(f => f.price))]
+    ? [Math.min(...flights.map(f => f.minPrice)), Math.max(...flights.map(f => f.minPrice))]
     : [0, 1000]
 
   // Calculate max duration from flights
@@ -58,7 +58,7 @@ export function FlightFilters({ flights, onFilterChange }: FlightFiltersProps) {
   useEffect(() => {
     const filtered = flights.filter(flight => {
       // Price filter
-      if (flight.price < filters.priceRange[0] || flight.price > filters.priceRange[1]) {
+      if (flight.minPrice < filters.priceRange[0] || flight.minPrice > filters.priceRange[1]) {
         return false
       }
 
@@ -74,11 +74,7 @@ export function FlightFilters({ flights, onFilterChange }: FlightFiltersProps) {
       }
         // Duration filter
         const durationHours = flight.duration / 60
-      if (durationHours > filters.maxDuration) {
-        return false
-      }
-
-      return true
+      return durationHours <= filters.maxDuration;
     })
 
     onFilterChange(filtered)

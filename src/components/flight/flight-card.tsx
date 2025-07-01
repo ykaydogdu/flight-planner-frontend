@@ -15,10 +15,12 @@ import React from 'react'
 
 interface FlightCardProps {
   flight: Flight
-  passengers: number
+  economyPassengers: number
+  businessPassengers: number
+  firstClassPassengers: number
 }
 
-export const FlightCard = React.memo(function FlightCard({ flight, passengers }: FlightCardProps) {
+export const FlightCard = React.memo(function FlightCard({ flight, economyPassengers, businessPassengers, firstClassPassengers }: FlightCardProps) {
   const navigate = useNavigate()
   const [showDetails, setShowDetails] = useState(false)
 
@@ -58,11 +60,26 @@ export const FlightCard = React.memo(function FlightCard({ flight, passengers }:
     return 'bg-red-100 text-red-800'
   }
 
-  const totalPrice = flight.price * passengers
+  const passengers = economyPassengers + businessPassengers + firstClassPassengers
+  const economyPrice = flight.classes.find(c => c.flightClass === 'ECONOMY')?.price || 0
+  const businessPrice = flight.classes.find(c => c.flightClass === 'BUSINESS')?.price || 0
+  const firstClassPrice = flight.classes.find(c => c.flightClass === 'FIRST_CLASS')?.price || 0
+  const totalPrice = flight.classes.reduce((acc, curr) => {
+    if (curr.flightClass === 'ECONOMY') {
+      return acc + curr.price * economyPassengers
+    }
+    if (curr.flightClass === 'BUSINESS') {
+      return acc + curr.price * businessPassengers
+    }
+    if (curr.flightClass === 'FIRST_CLASS') {
+      return acc + curr.price * firstClassPassengers
+    }
+    return acc
+  }, 0)
 
   const handleBooking = (e: React.MouseEvent) => {
     e.stopPropagation()
-    navigate(`/booking/${flight.id}?passengers=${passengers}`)
+    navigate(`/booking/${flight.id}?&economyPassengers=${economyPassengers}&businessPassengers=${businessPassengers}&firstClassPassengers=${firstClassPassengers}`)
   }
 
   return (
@@ -153,7 +170,7 @@ export const FlightCard = React.memo(function FlightCard({ flight, passengers }:
                   ${totalPrice.toLocaleString()}
                 </div>
                 <div className="text-sm text-gray-600">
-                  ${flight.price} per person
+                  ${totalPrice / passengers} per person
                 </div>
                 {passengers > 1 && (
                   <div className="text-xs text-gray-500">
@@ -265,12 +282,16 @@ export const FlightCard = React.memo(function FlightCard({ flight, passengers }:
                 </h4>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Base Price:</span>
-                    <span className="text-gray-900">${flight.price}</span>
+                    <span className="text-gray-600">Economy Class x {economyPassengers}:</span>
+                    <span className="text-gray-900">${economyPrice * economyPassengers}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Passengers:</span>
-                    <span className="text-gray-900">{passengers}</span>
+                    <span className="text-gray-600">Business Class x {businessPassengers}:</span>
+                    <span className="text-gray-900">${businessPrice * businessPassengers}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">First Class x {firstClassPassengers}:</span>
+                    <span className="text-gray-900">${firstClassPrice * firstClassPassengers}</span>
                   </div>
                   <div className="flex justify-between border-t pt-2">
                     <span className="font-medium text-gray-900">Total:</span>

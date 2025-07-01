@@ -23,7 +23,7 @@ export default function FlightsPage() {
     const sorted = [...flights]
     switch (sortBy) {
       case 'price':
-        sorted.sort((a, b) => sortOrder === 'asc' ? a.price - b.price : b.price - a.price)
+        sorted.sort((a, b) => sortOrder === 'asc' ? a.minPrice - b.minPrice : b.minPrice - a.minPrice)
         break
       case 'departure':
         sorted.sort((a, b) => {
@@ -59,7 +59,13 @@ export default function FlightsPage() {
 
   const formatSearchSummary = () => {
     if (!searchParams) return ''
-    return `${searchParams.originAirportCode} → ${searchParams.destinationAirportCode} • ${(searchParams.departureDate !== undefined) ? new Date(searchParams.departureDate).toLocaleDateString() : 'Any'}`
+    return `${searchParams.originAirportCode} → ${searchParams.destinationAirportCode} • 
+    ${(searchParams.departureDate !== undefined) ? new Date(searchParams.departureDate).toLocaleDateString() : 'Any'}
+    ${searchParams.airlineCode ? `• ${searchParams.airlineCode}` : ''}
+    ${searchParams.passengerEconomy ? `• ${searchParams.passengerEconomy} economy` : ''}
+    ${searchParams.passengerBusiness ? `• ${searchParams.passengerBusiness} business` : ''}
+    ${searchParams.passengerFirstClass ? `• ${searchParams.passengerFirstClass} first class` : ''}
+    `
   }
 
 
@@ -243,7 +249,9 @@ export default function FlightsPage() {
                   <FlightCard
                     key={flight.id}
                     flight={flight}
-                    passengers={1}
+                    economyPassengers={searchParams?.passengerEconomy || 0}
+                    businessPassengers={searchParams?.passengerBusiness || 0}
+                    firstClassPassengers={searchParams?.passengerFirstClass || 0}
                   />
                 ))}  
               </div>
