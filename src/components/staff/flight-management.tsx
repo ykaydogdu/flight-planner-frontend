@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useForm } from 'react-hook-form'
+import { useForm, useFieldArray } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useAuthStore } from '@/store/auth'
@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
-import { MapLocationPicker } from '@/components/ui/map-location-picker'
+import { AirportPicker } from '@/components/ui/airport-picker'
 import { apiClient } from '@/lib/api'
 import { useAirportStore } from '@/store/airports'
 import {
@@ -21,17 +21,29 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 import type { Flight, Airport } from '@/types'
-import { Plane, Clock, DollarSign, Users, Edit, Trash, Plus, MapPin } from 'lucide-react'
+import { Plane, Clock, Edit, Trash, Plus, MapPin } from 'lucide-react'
 import { useFlightStore } from '@/store/flights'
+
+const flightClassSchema = z.object({
+  flightClass: z.enum(['ECONOMY', 'BUSINESS', 'FIRST_CLASS']),
+  price: z.number().min(0.01, 'Price must be greater than 0'),
+  seatCount: z.number().min(1, 'Seat count must be at least 1'),
+});
 
 const flightSchema = z.object({
   departureTime: z.string().min(1, 'Departure time is required'),
-  price: z.number().min(0.01, 'Price must be greater than 0'),
-  seatCount: z.number().min(1, 'Seat count must be at least 1'),
   originAirportCode: z.string().min(3, 'Origin airport is required'),
-  destinationAirportCode: z.string().min(3, 'Destination airport is required')
-})
+  destinationAirportCode: z.string().min(3, 'Destination airport is required'),
+  flightClasses: z.array(flightClassSchema).min(1, 'At least one flight class is required.'),
+});
 
 type FlightFormData = z.infer<typeof flightSchema>
 
@@ -58,15 +70,23 @@ export function FlightManagement() {
     handleSubmit,
     formState: { errors },
     reset,
-    setValue
+    setValue,
+    control,
+    watch
   } = useForm<FlightFormData>({
     resolver: zodResolver(flightSchema),
     defaultValues: {
       departureTime: new Date(new Date().getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 16),
-      price: 100,
-      seatCount: 150
+      flightClasses: [],
     }
   })
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'flightClasses',
+  })
+
+  const watchedClasses = watch('flightClasses')
 
   useEffect(() => {
     setLoading(true)
@@ -119,10 +139,13 @@ export function FlightManagement() {
     const departureTime = new Date(flight.departureTime).toISOString().slice(0, 16)
     reset({
       departureTime,
-      price: flight.price,
-      seatCount: flight.seatCount,
       originAirportCode: flight.originAirport.code,
-      destinationAirportCode: flight.destinationAirport.code
+      destinationAirportCode: flight.destinationAirport.code,
+      flightClasses: flight.classes.map(c => ({
+        flightClass: c.flightClass,
+        price: c.price,
+        seatCount: c.seatCount
+      }))
     })
     setSelectedOriginAirport(flight.originAirport)
     setSelectedDestinationAirport(flight.destinationAirport)
@@ -143,36 +166,24 @@ export function FlightManagement() {
     } 
   }
 
-  const handleOriginLocationSelect = (latitude: number, longitude: number) => {
-    // Find the nearest airport
-    const nearestAirport = airports.reduce((nearest, airport) => {
-      const distance = Math.sqrt(
-        Math.pow(airport.latitude - latitude, 2) + Math.pow(airport.longitude - longitude, 2)
-      )
-      return distance < nearest.distance ? { airport, distance } : nearest
-    }, { airport: airports[0], distance: Infinity })
-
-    if (nearestAirport.airport) {
-      setSelectedOriginAirport(nearestAirport.airport)
-      setValue('originAirportCode', nearestAirport.airport.code)
+  const handleAirportSelect = (airport: Airport) => {
+    if (showOriginMap) {
+      if (selectedDestinationAirport?.code === airport.code) {
+        alert("Origin and destination airport cannot be the same.");
+        return;
+      }
+      setSelectedOriginAirport(airport);
+      setValue('originAirportCode', airport.code);
+      setShowOriginMap(false);
+    } else if (showDestinationMap) {
+      if (selectedOriginAirport?.code === airport.code) {
+        alert("Origin and destination airport cannot be the same.");
+        return;
+      }
+      setSelectedDestinationAirport(airport);
+      setValue('destinationAirportCode', airport.code);
+      setShowDestinationMap(false);
     }
-    setShowOriginMap(false)
-  }
-
-  const handleDestinationLocationSelect = (latitude: number, longitude: number) => {
-    // Find the nearest airport
-    const nearestAirport = airports.reduce((nearest, airport) => {
-      const distance = Math.sqrt(
-        Math.pow(airport.latitude - latitude, 2) + Math.pow(airport.longitude - longitude, 2)
-      )
-      return distance < nearest.distance ? { airport, distance } : nearest
-    }, { airport: airports[0], distance: Infinity })
-
-    if (nearestAirport.airport) {
-      setSelectedDestinationAirport(nearestAirport.airport)
-      setValue('destinationAirportCode', nearestAirport.airport.code)
-    }
-    setShowDestinationMap(false)
   }
 
   const formatDateTime = (dateTime: string) => {
@@ -225,12 +236,15 @@ export function FlightManagement() {
                 <h4 className="font-medium">
                   Select {showOriginMap ? 'Origin' : 'Destination'} Airport Location
                 </h4>
-                <MapLocationPicker
-                  onLocationSelect={showOriginMap ? handleOriginLocationSelect : handleDestinationLocationSelect}
+                <AirportPicker
+                  airports={airports}
+                  onSelect={handleAirportSelect}
                   onCancel={() => {
                     setShowOriginMap(false)
                     setShowDestinationMap(false)
                   }}
+                  selectedOrigin={selectedOriginAirport}
+                  selectedDestination={selectedDestinationAirport}
                 />
               </div>
             ) : (
@@ -299,7 +313,7 @@ export function FlightManagement() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {/* Departure Time */}
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-gray-700 flex items-center">
@@ -315,41 +329,89 @@ export function FlightManagement() {
                       <p className="text-sm text-red-500">{errors.departureTime.message}</p>
                     )}
                   </div>
+                </div>
 
-                  {/* Price */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700 flex items-center">
-                      <DollarSign className="h-4 w-4 mr-1" />
-                      Price ($)
-                    </label>
-                    <Input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      {...register('price', { valueAsNumber: true })}
-                      className={errors.price ? 'border-red-500' : ''}
-                    />
-                    {errors.price && (
-                      <p className="text-sm text-red-500">{errors.price.message}</p>
-                    )}
-                  </div>
-
-                  {/* Seat Count */}
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700 flex items-center">
-                      <Users className="h-4 w-4 mr-1" />
-                      Total Seats
-                    </label>
-                    <Input
-                      type="number"
-                      min="1"
-                      {...register('seatCount', { valueAsNumber: true })}
-                      className={errors.seatCount ? 'border-red-500' : ''}
-                    />
-                    {errors.seatCount && (
-                      <p className="text-sm text-red-500">{errors.seatCount.message}</p>
-                    )}
-                  </div>
+                {/* Flight Classes */}
+                <div className="space-y-4 pt-4 border-t">
+                  <h4 className="font-medium flex items-center justify-between">
+                    Flight Classes
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => append({ flightClass: 'ECONOMY', price: 100, seatCount: 100 })}
+                    >
+                      <Plus className="h-4 w-4 mr-1" />
+                      Add Class
+                    </Button>
+                  </h4>
+                  {fields.map((field, index) => {
+                    const availableClasses = ['ECONOMY', 'BUSINESS', 'FIRST_CLASS'].filter(
+                      (c) =>
+                        !watchedClasses.some(
+                          (wc, wcIndex) => wc.flightClass === c && wcIndex !== index
+                        )
+                    )
+                    return (
+                      <div key={field.id} className="grid grid-cols-12 gap-2 items-center p-2 border rounded-md">
+                        <div className="col-span-4 space-y-1">
+                          <label className="text-xs font-medium text-gray-600">Class</label>
+                           <Select
+                              defaultValue={field.flightClass}
+                              onValueChange={(value) => setValue(`flightClasses.${index}.flightClass`, value as 'ECONOMY' | 'BUSINESS' | 'FIRST_CLASS')}
+                            >
+                              <SelectTrigger>
+                                <SelectValue placeholder="Select class" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {availableClasses.map(c => (
+                                  <SelectItem key={c} value={c}>
+                                    {c.charAt(0) + c.slice(1).toLowerCase().replace('_', ' ')}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                        </div>
+                        <div className="col-span-3 space-y-1">
+                          <label className="text-xs font-medium text-gray-600">Price ($)</label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            min="0"
+                            {...register(`flightClasses.${index}.price`, { valueAsNumber: true })}
+                            className={errors.flightClasses?.[index]?.price ? 'border-red-500' : ''}
+                            placeholder="Price"
+                          />
+                        </div>
+                         <div className="col-span-3 space-y-1">
+                          <label className="text-xs font-medium text-gray-600">Seats</label>
+                          <Input
+                            type="number"
+                            min="1"
+                            {...register(`flightClasses.${index}.seatCount`, { valueAsNumber: true })}
+                            className={errors.flightClasses?.[index]?.seatCount ? 'border-red-500' : ''}
+                            placeholder="Seats"
+                          />
+                        </div>
+                        <div className="col-span-2 flex justify-end items-end h-full">
+                           <Button
+                            type="button"
+                            variant="destructive"
+                            size="icon"
+                            onClick={() => remove(index)}
+                          >
+                            <Trash className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                  {errors.flightClasses && !errors.flightClasses.root && (
+                    <p className="text-sm text-red-500">{errors.flightClasses.message}</p>
+                  )}
+                  {errors.flightClasses?.root && (
+                     <p className="text-sm text-red-500">{errors.flightClasses.root.message}</p>
+                  )}
                 </div>
 
                 <div className="flex gap-2 justify-end">
@@ -426,7 +488,7 @@ export function FlightManagement() {
                           {formatDateTime(flight.departureTime)}
                         </div>
                         <div className="text-sm font-medium">
-                          ${flight.price}
+                          ${flight.minPrice}
                         </div>
                         <div className="text-sm text-gray-600">
                           {flight.emptySeats} seats available

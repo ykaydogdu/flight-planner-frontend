@@ -72,16 +72,15 @@ export interface FlightSearchParams {
 
 export interface Booking {
   id: number
-  flightId: number
-  price: number
-  numberOfSeats: number
   airline: AirlineInfo
   originAirport: Airport
   destinationAirport: Airport
   departureTime: string
   duration: number
   arrivalTime: string
-  status: 'CONFIRMED' | 'CANCELLED'
+  passengers: Passenger[]
+  bookingDate: string
+  status: 'ACTIVE' | 'CANCELLED' | 'COMPLETED'
 }
 
 export interface BookingRequest {

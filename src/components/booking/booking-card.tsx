@@ -2,9 +2,10 @@ import type { Booking } from '@/types'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Plane, Calendar, Clock, User, Hash, AlertTriangle, Download, Printer } from 'lucide-react'
+import { Plane, Calendar, Clock, User, Hash, AlertTriangle, Download, Printer, ChevronLeft, ChevronRight } from 'lucide-react'
 import { format } from 'date-fns'
 import { useBookingStore } from '@/store/bookings'
+import { useState } from 'react'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,6 +24,7 @@ interface BookingCardProps {
 
 export function BookingCard({ booking }: BookingCardProps) {
   const { cancelBooking } = useBookingStore()
+  const [currentPassengerIndex, setCurrentPassengerIndex] = useState(0)
 
   const handleCancel = async () => {
     try {
@@ -35,6 +37,17 @@ export function BookingCard({ booking }: BookingCardProps) {
   }
 
   const isCancelled = booking.status === 'CANCELLED'
+  const passengers = booking.passengers || []
+  const showPagination = passengers.length > 2
+  const currentPassenger = passengers[currentPassengerIndex]
+
+  const nextPassenger = () => {
+    setCurrentPassengerIndex((prev) => (prev + 1) % passengers.length)
+  }
+
+  const prevPassenger = () => {
+    setCurrentPassengerIndex((prev) => (prev - 1 + passengers.length) % passengers.length)
+  }
 
   return (
     <Card className={`transition-all ${isCancelled ? 'bg-gray-100 opacity-70' : 'bg-white'}`}>
@@ -88,13 +101,54 @@ export function BookingCard({ booking }: BookingCardProps) {
             <div className="flex items-center">
               <User className="h-5 w-5 mr-3 text-blue-600" />
               <div>
-                <p>User Info</p>
+                {passengers.length > 0 ? (
+                  <div>
+                    {showPagination ? (
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                          <p className="font-semibold">Passenger {currentPassengerIndex + 1} of {passengers.length}</p>
+                          <div className="flex space-x-1">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={prevPassenger}
+                              className="h-6 w-6 p-0"
+                            >
+                              <ChevronLeft className="h-3 w-3" />
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={nextPassenger}
+                              className="h-6 w-6 p-0"
+                            >
+                              <ChevronRight className="h-3 w-3" />
+                            </Button>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="font-medium">{currentPassenger.firstName} {currentPassenger.lastName} ({currentPassenger.flightClass})</p>
+                          <p className="text-sm text-gray-500">{currentPassenger.email}</p>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {passengers.map((passenger, index) => (
+                          <div key={index} className="border-l-2 border-blue-200 pl-3">
+                            <p className="font-medium">{passenger.firstName} {passenger.lastName} ({passenger.flightClass})</p>
+                            <p className="text-sm text-gray-500">{passenger.email}</p>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="text-sm text-gray-500">No passenger information available</p>
+                )}
               </div>
             </div>
              <div className="flex items-center">
-                {/* <p className="text-sm text-gray-500">Booked on {format(new Date(booking.createdAt), 'MMM d, yyyy')}</p>
-                 */}
-                 <p>created at</p>
+                <p className="text-sm text-gray-500">Booked on {format(new Date(booking.bookingDate), 'MMM d, yyyy')}</p>
             </div>
           </div>
         </div>
