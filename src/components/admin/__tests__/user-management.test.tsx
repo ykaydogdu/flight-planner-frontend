@@ -1,3 +1,4 @@
+import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { UserManagement } from '../user-management'
 import { vi } from 'vitest'

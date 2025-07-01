@@ -1,3 +1,4 @@
+import React from 'react'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { BrowserRouter } from 'react-router-dom'
@@ -9,12 +10,13 @@ vi.mock('@/store/flights', () => ({
   useFlightStore: vi.fn(),
 }))
 
-// Mock navigate
+// Single mock for react-router-dom used across all tests in this file
+const mockNavigate = vi.fn()
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom')
   return {
     ...actual,
-    useNavigate: () => vi.fn(),
+    useNavigate: () => mockNavigate,
   }
 })
 
@@ -111,12 +113,6 @@ describe('FlightSearchForm', () => {
   })
 
   it('calls searchFlights with passenger selection when form is submitted', async () => {
-    const mockNavigate = vi.fn()
-    vi.mock('react-router-dom', async () => ({
-      ...(await vi.importActual('react-router-dom')),
-      useNavigate: () => mockNavigate,
-    }))
-
     renderWithRouter(<FlightSearchForm />)
     
     // Fill in the required fields

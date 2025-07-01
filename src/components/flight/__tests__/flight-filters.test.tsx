@@ -1,4 +1,4 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import { FlightFilters } from '../flight-filters'
 import { vi } from 'vitest'
 import type { Flight } from '@/types'
@@ -63,7 +63,11 @@ const flightsMock: Flight[] = [
 ]
 
 describe('FlightFilters', () => {
-  it('filters flights by airline when checkbox toggled and Apply Filters clicked', () => {
+  beforeEach(() => {
+    onFilterChangeMock.mockClear()
+  })
+
+  it('filters flights by airline when checkbox toggled and Apply Filters clicked', async () => {
     render(
       <FlightFilters flights={flightsMock} onFilterChange={onFilterChangeMock} />,
     )
@@ -75,14 +79,17 @@ describe('FlightFilters', () => {
     // Apply filters
     fireEvent.click(screen.getByRole('button', { name: /apply filters/i }))
 
-    // onFilterChange should be eventually called with only flight id 2
+    // onFilterChange should eventually be called with only flight id 2
     const expected = flightsMock.filter((f) => f.airline.code === 'BB')
 
-    // Because filtering is synchronous inside useEffect after state update, the last call arg should equal expected
-    expect(onFilterChangeMock.mock.calls.pop()?.[0]).toEqual(expected)
+    await waitFor(() => {
+      expect(onFilterChangeMock).toHaveBeenCalled()
+      const lastCall = onFilterChangeMock.mock.calls.pop()?.[0]
+      expect(lastCall).toEqual(expected)
+    })
   })
 
-  it('clears filters when "Clear All" clicked', () => {
+  it('clears filters when "Clear All" clicked', async () => {
     render(
       <FlightFilters flights={flightsMock} onFilterChange={onFilterChangeMock} />,
     )
@@ -95,6 +102,10 @@ describe('FlightFilters', () => {
     fireEvent.click(screen.getByRole('button', { name: /clear all/i }))
 
     // onFilterChange should eventually include all flights again
-    expect(onFilterChangeMock.mock.calls.pop()?.[0]).toEqual(flightsMock)
+    await waitFor(() => {
+      expect(onFilterChangeMock).toHaveBeenCalled()
+      const lastCall = onFilterChangeMock.mock.calls.pop()?.[0]
+      expect(lastCall).toEqual(flightsMock)
+    })
   })
 }) 
