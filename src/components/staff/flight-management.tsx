@@ -8,9 +8,8 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { AirportPicker } from '@/components/ui/airport-picker'
-import { apiClient } from '@/lib/api'
 import { useAirportStore } from '@/store/airports'
-import { useFlightStore } from '@/store/flights'
+import { useFlightStore, type BookingInfo, type FlightFormData } from '@/store/flights'
 import {
   AlertDialog,
   AlertDialogAction,
@@ -29,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import type { Booking, Flight, Passenger, Airport } from '@/types'
+import type { Flight, Passenger, Airport } from '@/types'
 import {
   DollarSign,
   Search,
@@ -51,31 +50,7 @@ interface FlightWithBookings extends Flight {
   emptySeats: number
 }
 
-interface BookingInfo {
-  id: number
-  passengerName: string
-  passengerEmail: string
-  numberOfSeats: number
-  bookingDate: string
-  status: string
-  flightClass?: string
-  totalPrice?: number
-}
 
-interface FlightStats {
-  flightId: number
-  bookingCount: number
-  revenue: number
-  passengerCount: number
-  bookings: BookingInfo[]
-}
-
-interface StatsResponse {
-  flightStats: FlightStats[]
-  overallBookingCount: number
-  overallPassengerCount: number
-  overallRevenue: number
-}
 
 interface OverallStats {
   activeFlights: number
@@ -97,12 +72,18 @@ const flightSchema = z.object({
   flightClasses: z.array(flightClassSchema).min(1, 'At least one flight class is required.'),
 });
 
-type FlightFormData = z.infer<typeof flightSchema>
-
 export function FlightManagement({ setOverallStats }: { setOverallStats: (stats: OverallStats) => void }) {
   const { user } = useAuthStore()
   const { airports, fetchAirports } = useAirportStore()
-  const { flights, searchFlights } = useFlightStore()
+  const { 
+    flights, 
+    searchFlights, 
+    fetchFlightStats, 
+    createFlight, 
+    updateFlight, 
+    deleteFlight, 
+    fetchBookingsForFlight 
+  } = useFlightStore()
   const [loading, setLoading] = useState(true)
   const [creating, setCreating] = useState(false)
   const [editing, setEditing] = useState<FlightWithBookings | null>(null)
@@ -156,7 +137,7 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
     if (!user?.airline?.code || flights.length === 0) return
     async function loadStats() {
       setLoading(true)
-      const { data } = await apiClient.get<StatsResponse>('/flights/stats', { params: { airlineCode: user?.airline?.code || '' } })
+      const data = await fetchFlightStats(user?.airline?.code || '')
       
       // Merge flight data with booking stats while preserving any previously fetched booking details
       setFlightsWithBookings((prevFlights) => {
@@ -189,7 +170,7 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
     loadStats().finally(() => {
       setLoading(false)
     })
-  }, [flights, user?.airline?.code, setOverallStats])
+  }, [flights, user?.airline?.code, setOverallStats, fetchFlightStats])
 
   const onSubmit = async (data: FlightFormData) => {
     if (!user?.airline?.code) return
@@ -202,9 +183,9 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
       }
 
       if (editing) {
-        await apiClient.put(`/flights/${editing.id}`, flightData)
+        await updateFlight(editing.id, flightData)
       } else {
-        await apiClient.post('/flights', flightData)
+        await createFlight(flightData)
       }
 
       await searchFlights({
@@ -243,7 +224,7 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
 
   const handleDelete = async (flightId: number) => {
     try {
-      await apiClient.delete(`/flights/${flightId}`)
+      await deleteFlight(flightId)
       await searchFlights({
         airlineCode: user?.airline?.code || ''
       })
@@ -285,11 +266,9 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
       if (flight && !flight.bookingsFetched) {
         setLoadingBookings((prev) => new Set(prev).add(flightId))
         try {
-          const response = await apiClient.get<Booking[]>(`/bookings`, {
-            params: { flightId },
-          })
+          const bookingsData = await fetchBookingsForFlight(flightId)
 
-          const bookings: BookingInfo[] = response.data.map(b => {
+          const bookings: BookingInfo[] = bookingsData.map(b => {
             const mainPassenger = b.passengers?.[0] || {}
             const totalPrice = b.passengers?.reduce((sum: number, p: Passenger) => sum + p.priceAtBooking, 0)
 
