@@ -1,8 +1,9 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { Header } from '../header'
 import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { vi } from 'vitest'
 import type { AuthState } from '@/store/auth'
+import userEvent from '@testing-library/user-event'
 
 const logoutMock = vi.fn()
 
@@ -45,7 +46,7 @@ describe('Header', () => {
     expect(screen.getByRole('link', { name: /sign up/i })).toBeInTheDocument()
   })
 
-  it('renders role-based links and logout when authenticated', () => {
+  it('renders role-based links and logout when authenticated', async () => {
     storeState = {
       user: { username: 'admin', email: 'admin@example.com', firstName: 'Admin', lastName: 'User', role: 'ROLE_ADMIN' },
       token: '123',
@@ -61,7 +62,7 @@ describe('Header', () => {
     expect(screen.queryByText(/staff dashboard/i)).not.toBeInTheDocument()
 
     // Click logout
-    fireEvent.click(screen.getByRole('button', { name: /logout/i }))
+    await userEvent.click(screen.getByRole('button', { name: /logout/i }))
     expect(logoutMock).toHaveBeenCalled()
   })
 }) 
