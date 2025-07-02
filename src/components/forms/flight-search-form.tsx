@@ -188,7 +188,7 @@ export function FlightSearchForm() {
                 <button
                   type="button"
                   onClick={() => handleUseNearestAirport('origin')}
-                  className="text-sm text-blue-600 hover:text-blue-800 underline cursor-pointer ml-1"
+                  className="text-sm text-primary hover:text-primary-foreground underline cursor-pointer ml-1"
                   disabled={loadingAirport}
                 >
                   {loadingAirport ? 'Loading...' : 'Use nearest airport'}
@@ -225,7 +225,7 @@ export function FlightSearchForm() {
                 <button
                   type="button"
                   onClick={() => handleUseNearestAirport('destination')}
-                  className="text-sm text-blue-600 hover:text-blue-800 underline cursor-pointer ml-1"
+                  className="text-sm text-primary hover:text-primary-foreground underline cursor-pointer ml-1"
                   disabled={loadingAirport}
                 >
                   {loadingAirport ? 'Loading...' : 'Use nearest airport'}
@@ -264,7 +264,7 @@ export function FlightSearchForm() {
                 <button
                   type="button"
                   onClick={() => setAnyDate(!anyDate)}
-                  className="text-sm text-blue-600 hover:text-blue-800 underline cursor-pointer ml-1"
+                  className="text-sm text-primary hover:text-primary-foreground underline cursor-pointer ml-1"
                 >
                   {anyDate ? 'Select Date' : 'Any'}
                 </button>

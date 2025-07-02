@@ -50,11 +50,11 @@ export function BookingCard({ booking }: BookingCardProps) {
   }
 
   return (
-    <Card className={`transition-all ${isCancelled ? 'bg-gray-100 opacity-70' : 'bg-white'}`}>
+    <Card className={`transition-all ${isCancelled ? 'bg-secondary opacity-70' : 'bg-secondary'}`}>
       <CardHeader>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-secondary-foreground">
               {booking.originAirport.city} → {booking.destinationAirport.city}
             </p>
             <CardTitle className="text-2xl font-bold">
@@ -65,7 +65,7 @@ export function BookingCard({ booking }: BookingCardProps) {
             <Badge variant={isCancelled ? 'destructive' : 'default'}>
               {booking.status}
             </Badge>
-            <p className="text-sm text-gray-600 flex items-center">
+            <p className="text-sm text-secondary-foreground flex items-center">
               <Hash className="h-4 w-4 mr-1" />
               {booking.id}
             </p>
@@ -76,30 +76,30 @@ export function BookingCard({ booking }: BookingCardProps) {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <div className="md:col-span-2 space-y-4">
             <div className="flex items-center">
-              <Plane className="h-5 w-5 mr-3 text-blue-600" />
+              <Plane className="h-5 w-5 mr-3 text-primary" />
               <div>
                 <p className="font-semibold">{`${booking.originAirport.code} → ${booking.destinationAirport.code}`}</p>
-                <p className="text-sm text-gray-500">{`${booking.originAirport.name} to ${booking.destinationAirport.name}`}</p>
+                <p className="text-sm text-secondary-foreground">{`${booking.originAirport.name} to ${booking.destinationAirport.name}`}</p>
               </div>
             </div>
             <div className="flex items-center">
-              <Calendar className="h-5 w-5 mr-3 text-blue-600" />
+              <Calendar className="h-5 w-5 mr-3 text-primary" />
               <div>
                 <p className="font-semibold">{format(new Date(booking.departureTime), 'EEE, MMM d, yyyy')}</p>
-                <p className="text-sm text-gray-500">Departure Date</p>
+                <p className="text-sm text-secondary-foreground">Departure Date</p>
               </div>
             </div>
             <div className="flex items-center">
-              <Clock className="h-5 w-5 mr-3 text-blue-600" />
+              <Clock className="h-5 w-5 mr-3 text-primary" />
               <div>
                 <p className="font-semibold">{format(new Date(booking.departureTime), 'h:mm a')}</p>
-                <p className="text-sm text-gray-500">Departure Time</p>
+                <p className="text-sm text-secondary-foreground">Departure Time</p>
               </div>
             </div>
           </div>
           <div className="space-y-4">
             <div className="flex items-center">
-              <User className="h-5 w-5 mr-3 text-blue-600" />
+              <User className="h-5 w-5 mr-3 text-primary" />
               <div>
                 {passengers.length > 0 ? (
                   <div>
@@ -128,7 +128,7 @@ export function BookingCard({ booking }: BookingCardProps) {
                         </div>
                         <div>
                           <p className="font-medium">{currentPassenger.firstName} {currentPassenger.lastName} ({currentPassenger.flightClass})</p>
-                          <p className="text-sm text-gray-500">{currentPassenger.email}</p>
+                          <p className="text-sm text-secondary-foreground">{currentPassenger.email}</p>
                         </div>
                       </div>
                     ) : (
@@ -136,19 +136,19 @@ export function BookingCard({ booking }: BookingCardProps) {
                         {passengers.map((passenger, index) => (
                           <div key={index} className="border-l-2 border-blue-200 pl-3">
                             <p className="font-medium">{passenger.firstName} {passenger.lastName} ({passenger.flightClass})</p>
-                            <p className="text-sm text-gray-500">{passenger.email}</p>
+                            <p className="text-sm text-secondary-foreground">{passenger.email}</p>
                           </div>
                         ))}
                       </div>
                     )}
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-500">No passenger information available</p>
+                  <p className="text-sm text-secondary-foreground">No passenger information available</p>
                 )}
               </div>
             </div>
              <div className="flex items-center">
-                <p className="text-sm text-gray-500">Booked on {format(new Date(booking.bookingDate), 'MMM d, yyyy')}</p>
+                <p className="text-sm text-secondary-foreground">Booked on {format(new Date(booking.bookingDate), 'MMM d, yyyy')}</p>
             </div>
           </div>
         </div>
@@ -173,7 +173,7 @@ export function BookingCard({ booking }: BookingCardProps) {
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle className="flex items-center">
-                    <AlertTriangle className="h-5 w-5 mr-2 text-red-500" />
+                    <AlertTriangle className="h-5 w-5 mr-2 text-destructive" />
                     Are you sure?
                   </AlertDialogTitle>
                   <AlertDialogDescription>
