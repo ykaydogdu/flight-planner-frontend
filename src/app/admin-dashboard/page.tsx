@@ -43,7 +43,7 @@ export default function AdminDashboardPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-600">Access Denied</h1>
-          <p className="text-gray-600">You need admin privileges to access this page.</p>
+          <p className="text-secondary-foreground">You need admin privileges to access this page.</p>
         </div>
       </div>
     )
@@ -53,10 +53,10 @@ export default function AdminDashboardPage() {
     <div className="relative min-h-screen overflow-hidden">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-4">
-          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+          <h1 className="text-4xl font-extrabold text-foreground tracking-tight">
             Admin Dashboard
           </h1>
-          <p className="text-gray-600">Manage users, airlines, and airports</p>
+          <p className="text-secondary-foreground">Manage users, airlines, and airports</p>
 
           {/* Dashboard Stats */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
@@ -68,7 +68,7 @@ export default function AdminDashboardPage() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{users.length}</p>
-                    <p className="text-sm text-gray-600">Total Users</p>
+                    <p className="text-sm text-secondary-foreground">Total Users</p>
                   </div>
                 </div>
               </CardContent>
@@ -82,7 +82,7 @@ export default function AdminDashboardPage() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{airlines.length}</p>
-                    <p className="text-sm text-gray-600">Airlines</p>
+                    <p className="text-sm text-secondary-foreground">Airlines</p>
                   </div>
                 </div>
               </CardContent>
@@ -96,7 +96,7 @@ export default function AdminDashboardPage() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{airports.length}</p>
-                    <p className="text-sm text-gray-600">Airports</p>
+                    <p className="text-sm text-secondary-foreground">Airports</p>
                   </div>
                 </div>
               </CardContent>
@@ -110,7 +110,7 @@ export default function AdminDashboardPage() {
                   </div>
                   <div>
                     <p className="text-2xl font-bold">{validationIssues.length}</p>
-                    <p className="text-sm text-gray-600">Issues</p>
+                    <p className="text-sm text-secondary-foreground">Issues</p>
                   </div>
                 </div>
               </CardContent>
@@ -120,7 +120,7 @@ export default function AdminDashboardPage() {
 
         {/* Tab Navigation */}
         <div className="mb-4">
-          <div className="flex space-x-1 bg-gray-100 rounded-lg p-1 text-secondary-foreground">
+          <div className="flex space-x-1 bg-secondary rounded-lg p-1 text-secondary-foreground">
             <Button
               variant={activeTab === 'users' ? 'default' : 'ghost'}
               onClick={() => setActiveTab('users')}

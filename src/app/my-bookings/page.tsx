@@ -23,12 +23,12 @@ export default function MyBookingsPage() {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <h1 className="text-3xl font-bold text-gray-900 mb-6">My Bookings</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-6">My Bookings</h1>
         <div className="space-y-6">
           {[1, 2, 3].map((i) => (
             <Card key={i} className="animate-pulse">
               <CardContent className="p-6">
-                <div className="h-24 bg-gray-200 rounded-md"></div>
+                <div className="h-24 bg-secondary rounded-md"></div>
               </CardContent>
             </Card>
           ))}
@@ -41,18 +41,18 @@ export default function MyBookingsPage() {
     <div className="min-h-screen">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="flex items-center justify-between mb-8">
-          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+          <h1 className="text-4xl font-extrabold text-foreground tracking-tight">
             My Bookings
           </h1>
-          <Ticket className="h-10 w-10 text-blue-600" />
+          <Ticket className="h-10 w-10 text-primary" />
         </div>
 
         {bookings.length === 0 ? (
           <Card className="text-center py-20">
             <CardContent>
               <AlertCircle className="h-16 w-16 text-gray-400 mx-auto mb-6" />
-              <h3 className="text-2xl font-semibold text-gray-900 mb-3">No bookings found</h3>
-              <p className="text-gray-600 mb-6">
+              <h3 className="text-2xl font-semibold text-foreground mb-3">No bookings found</h3>
+              <p className="text-secondary-foreground mb-6">
                 You haven&apos;t booked any flights yet. When you do, they will appear here.
               </p>
               <Button onClick={() => navigate('/')}>
