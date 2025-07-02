@@ -112,7 +112,7 @@ export function UserManagement() {
             const warning = getValidationWarning(user)
 
             return (
-              <div key={user.username} className="flex items-center justify-between p-4 border rounded-lg">
+              <div key={user.username} className="flex items-center justify-between p-4 border-app rounded-lg bg-secondary">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="font-semibold">{user.username}</h3>
@@ -130,9 +130,9 @@ export function UserManagement() {
                       </Badge>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600">{user.email}</p>
+                    <p className="text-sm text-secondary-foreground">{user.email}</p>
                   {warning && (
-                    <p className="text-sm text-red-600 mt-1">{warning}</p>
+                    <p className="text-sm text-destructive mt-1">{warning}</p>
                   )}
                 </div>
 
@@ -171,7 +171,7 @@ export function UserManagement() {
                               <AlertDialogDescription>
                                 Are you sure you want to assign the role {selectedRole[user.username].replace('ROLE_', '')} to {user.username}?
                                 {selectedRole[user.username] !== 'ROLE_AIRLINE_STAFF' && user.airline && (
-                                  <span className="text-red-600"> This will also remove their airline assignment.</span>
+                                  <span className="text-destructive"> This will also remove their airline assignment.</span>
                                 )}
                               </AlertDialogDescription>
                             </AlertDialogHeader>
@@ -222,7 +222,7 @@ export function UserManagement() {
                                 <AlertDialogDescription>
                                   Are you sure you want to assign airline {selectedAirline[user.username] || 'None'} to {user.username}?
                                   {selectedAirline[user.username] && user.role !== 'ROLE_AIRLINE_STAFF' && (
-                                    <span className="text-blue-600"> This will also change their role to Airline Staff.</span>
+                                    <span className="text-primary"> This will also change their role to Airline Staff.</span>
                                   )}
                                 </AlertDialogDescription>
                               </AlertDialogHeader>

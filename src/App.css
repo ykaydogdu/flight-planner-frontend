@@ -31,7 +31,7 @@
   --accent: oklch(0.85 0.18 255);
   --accent-foreground: oklch(1 0 0); /* White text */
   --destructive: oklch(0.55 0.22 25); /* #DC3545 - Error red */
-  --border: oklch(0.93 0 0); /* Light gray borders */
+  --border: oklch(0.85 0 0); /* Light gray borders */
   --input: oklch(0.96 0 0); /* Very light gray inputs */
   --ring: oklch(0.45 0.15 250); /* Primary blue for focus rings */
   --chart-1: oklch(0.45 0.15 250); /* Primary blue */
@@ -97,7 +97,7 @@ body {
   --accent: oklch(0.52 0.18 255); /* Lighter green for dark mode */
   --accent-foreground: oklch(0.08 0 0); /* Dark text on green */
   --destructive: oklch(0.65 0.25 25); /* Lighter red for dark mode */
-  --border: oklch(0.2 0 0); /* Dark border */
+  --border: oklch(0.25 0 0); /* Dark border */
   --input: oklch(0.15 0 0); /* Dark input background */
   --ring: oklch(0.6 0.18 250); /* Primary blue for focus rings */
   --chart-1: oklch(0.6 0.18 250); /* Primary blue */
@@ -126,4 +126,11 @@ body {
   .text-secondary-foreground {
     @apply text-gray-700 dark:text-gray-300;
   }
+} 
+
+.dark .leaflet-layer,
+.dark .leaflet-control-zoom-in,
+.dark .leaflet-control-zoom-out,
+.dark .leaflet-control-attribution {
+  filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
 }

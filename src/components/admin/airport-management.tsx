@@ -107,7 +107,7 @@ export function AirportManagement() {
         {!showMap ? (
           <>
             {/* Create New Airport Form */}
-            <div className="mb-6 p-4 border rounded-lg bg-gray-50">
+            <div className="mb-6 p-4 border-app rounded-lg bg-secondary">
               <h3 className="font-semibold mb-3">Create New Airport</h3>
               <form onSubmit={handleFormSubmit} className="space-y-3">
                 <div className="flex gap-3">
@@ -160,7 +160,7 @@ export function AirportManagement() {
               {loading ? (
                 <div className="text-center py-8">Loading airports...</div>
               ) : airports.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">No airports found</div>
+                <div className="text-center py-8 text-secondary-foreground">No airports found</div>
               ) : (
                 <div className="grid gap-3">
                   <Button 
@@ -171,7 +171,7 @@ export function AirportManagement() {
                     {showAllAirports ? "Show Less" : "Show All"}
                   </Button>
                   {airports.slice(0, showAllAirports ? airports.length : 3).map((airport) => (
-                    <div key={airport.code} className="flex items-center justify-between p-3 border rounded-lg">
+                    <div key={airport.code} className="flex items-center justify-between p-3 border-app rounded-lg bg-secondary">
                       <div className="flex items-center gap-3">
                         <div className="w-10 flex items-center justify-center">
                           <Badge variant="secondary" className="font-mono">
@@ -180,9 +180,9 @@ export function AirportManagement() {
                         </div>
                         <div>
                           <div className="font-medium">{airport.name}</div>
-                          <div className="text-sm text-gray-600">
+                          <div className="text-sm text-secondary-foreground">
                             {airport.city}, {airport.country}
-                              <Button variant="link" size="sm" className="ml-2 text-xs text-blue-600" onClick={() => handleAirportSelect(airport)}>
+                              <Button variant="link" size="sm" className="ml-2 text-xs text-primary" onClick={() => handleAirportSelect(airport)}>
                                 📍 {airport.latitude.toFixed(4)}, {airport.longitude.toFixed(4)}
                               </Button>
                           </div>
@@ -225,11 +225,11 @@ export function AirportManagement() {
               </h3>
             </div>
             
-            <div className="p-4 border rounded-lg bg-blue-50">
-              <div className="text-sm text-blue-800 mb-2">
+            <div className="p-4 border-app rounded-lg bg-secondary">
+              <div className="text-sm text-primary mb-2">
                 <strong>Airport Details:</strong>
               </div>
-              <div className="text-sm text-blue-700">
+              <div className="text-sm text-primary">
                 <div><strong>Code:</strong> {newAirport.code}</div>
                 <div><strong>Name:</strong> {newAirport.name}</div>
               </div>
