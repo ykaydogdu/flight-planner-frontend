@@ -1,7 +1,8 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { FlightFilters } from '../flight-filters'
 import { vi } from 'vitest'
 import type { Flight } from '@/types'
+import userEvent from '@testing-library/user-event'
 
 const onFilterChangeMock = vi.fn()
 
@@ -31,7 +32,14 @@ const flightsMock: Flight[] = [
       latitude: 0,
       longitude: 0,
     },
-    classes: [],
+    classes: [
+      {
+        flightClass: 'ECONOMY',
+        price: 200,
+        seatCount: 180,
+        availableSeats: 25,
+      }
+    ],
   },
   {
     id: 2,
@@ -58,7 +66,14 @@ const flightsMock: Flight[] = [
       latitude: 0,
       longitude: 0,
     },
-    classes: [],
+    classes: [
+      {
+        flightClass: 'ECONOMY',
+        price: 200,
+        seatCount: 180,
+        availableSeats: 25,
+      }
+    ],
   },
 ]
 
@@ -74,10 +89,10 @@ describe('FlightFilters', () => {
 
     // Select Beta Air airline checkbox
     const betaCheckbox = screen.getByLabelText(/beta air/i)
-    fireEvent.click(betaCheckbox)
+    await userEvent.click(betaCheckbox)
 
     // Apply filters
-    fireEvent.click(screen.getByRole('button', { name: /apply filters/i }))
+    await userEvent.click(screen.getByRole('button', { name: /apply filters/i }))
 
     // onFilterChange should eventually be called with only flight id 2
     const expected = flightsMock.filter((f) => f.airline.code === 'BB')
@@ -95,11 +110,11 @@ describe('FlightFilters', () => {
     )
 
     // Adjust price max to lower than second flight price
-    fireEvent.change(screen.getAllByPlaceholderText('Max')[0], { target: { value: '200' } })
-    fireEvent.click(screen.getByRole('button', { name: /apply filters/i }))
+    await userEvent.type(screen.getAllByPlaceholderText('Max')[0], '200')
+    await userEvent.click(screen.getByRole('button', { name: /apply filters/i }))
 
     // Now clear all
-    fireEvent.click(screen.getByRole('button', { name: /clear all/i }))
+    await userEvent.click(screen.getByRole('button', { name: /clear all/i }))
 
     // onFilterChange should eventually include all flights again
     await waitFor(() => {

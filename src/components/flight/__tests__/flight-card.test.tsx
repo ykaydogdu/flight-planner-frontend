@@ -1,8 +1,9 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { FlightCard } from '../flight-card'
 import { MemoryRouter } from 'react-router-dom'
 import { vi } from 'vitest'
 import type { Flight } from '@/types'
+import userEvent from '@testing-library/user-event'
 
 // Mock navigate
 const navigateMock = vi.fn()
@@ -61,7 +62,7 @@ describe('FlightCard', () => {
     expect(screen.getByText('$200 per person')).toBeInTheDocument()
   })
 
-  it('shows expandable details when card is clicked', () => {
+  it('shows expandable details when card is clicked', async () => {
     render(
       <MemoryRouter>
         <FlightCard flight={mockFlight} economyPassengers={1} businessPassengers={0} firstClassPassengers={0} />
@@ -72,19 +73,19 @@ describe('FlightCard', () => {
     expect(screen.queryByText(/flight number/i)).not.toBeInTheDocument()
 
     // Click card to expand
-    fireEvent.click(screen.getByText(/example airline/i))
+    await userEvent.click(screen.getByText(/example airline/i))
 
     expect(screen.getByText(/flight number/i)).toBeInTheDocument()
   })
 
-  it('navigates to booking page when "Select Flight" button is clicked', () => {
+  it('navigates to booking page when "Select Flight" button is clicked', async () => {
     render(
       <MemoryRouter>
         <FlightCard flight={mockFlight} economyPassengers={1} businessPassengers={0} firstClassPassengers={0} />
       </MemoryRouter>,
     )
 
-    fireEvent.click(screen.getByRole('button', { name: /select flight/i }))
+    await userEvent.click(screen.getByRole('button', { name: /select flight/i }))
 
     expect(navigateMock).toHaveBeenCalledWith('/booking/1?passengerEconomy=1&passengerBusiness=0&passengerFirstClass=0')
   })
