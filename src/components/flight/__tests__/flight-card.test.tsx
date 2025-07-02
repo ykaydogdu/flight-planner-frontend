@@ -40,7 +40,14 @@ describe('FlightCard', () => {
       latitude: 0,
       longitude: 0,
     },
-    classes: [],
+    classes: [
+      {
+        flightClass: 'ECONOMY',
+        price: 200,
+        seatCount: 180,
+        availableSeats: 25,
+      }
+    ],
   }
 
   it('renders airline name and price per passenger', () => {
@@ -79,6 +86,6 @@ describe('FlightCard', () => {
 
     fireEvent.click(screen.getByRole('button', { name: /select flight/i }))
 
-    expect(navigateMock).toHaveBeenCalledWith('/booking/1?passengers=1')
+    expect(navigateMock).toHaveBeenCalledWith('/booking/1?passengerEconomy=1&passengerBusiness=0&passengerFirstClass=0')
   })
 }) 
