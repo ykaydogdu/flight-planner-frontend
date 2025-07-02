@@ -50,9 +50,7 @@ interface FlightWithBookings extends Flight {
   emptySeats: number
 }
 
-
-
-interface OverallStats {
+export interface OverallStats {
   activeFlights: number
   overallBookingCount: number
   overallPassengerCount: number

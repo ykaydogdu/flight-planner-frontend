@@ -12,12 +12,20 @@ import { motion } from 'motion/react'
 
 export default function FlightsPage() {
   const navigate = useNavigate()
-  const { flights, loading, searchParams } = useFlightStore()
+  const { flights, loading, searchParams, hasActiveSearch, clearSearchState } = useFlightStore()
   const [filteredFlights, setFilteredFlights] = useState<Flight[]>([])
   const [showFilters, setShowFilters] = useState(false)
   const [showSearchForm, setShowSearchForm] = useState(false)
   const [sortBy, setSortBy] = useState<'price' | 'departure' | 'duration'>('price')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
+
+  // Clear search state if there's no active search when component mounts
+  useEffect(() => {
+    if (!hasActiveSearch && (searchParams || flights.length > 0)) {
+      clearSearchState()
+      setShowSearchForm(true)
+    }
+  }, [hasActiveSearch, searchParams, flights.length, clearSearchState]) // Dependencies needed for exhaustive-deps
 
   useEffect(() => {
     const sorted = [...flights]
@@ -44,6 +52,21 @@ export default function FlightsPage() {
     setFilteredFlights(sorted)
   }, [flights, searchParams, loading, navigate, sortBy, sortOrder])
 
+  // Mark search as consumed after results are displayed and user has had time to see them
+  useEffect(() => {
+    if (hasActiveSearch && flights.length > 0 && !loading) {
+      const timeoutId = setTimeout(() => {
+        // Mark search as consumed so user needs fresh search on next visit
+        const currentState = useFlightStore.getState()
+        if (currentState.hasActiveSearch) {
+          useFlightStore.setState({ hasActiveSearch: false })
+        }
+      }, 1000) // Give user 1 second to see the results
+
+      return () => clearTimeout(timeoutId)
+    }
+  }, [hasActiveSearch, flights.length, loading])
+
   const handleFilterChange = (filtered: Flight[]) => {
     setFilteredFlights(filtered)
   }
@@ -58,7 +81,7 @@ export default function FlightsPage() {
   }
 
   const formatSearchSummary = () => {
-    if (!searchParams) return ''
+    if (!hasActiveSearch || !searchParams) return ''
     return `${searchParams.originAirportCode} → ${searchParams.destinationAirportCode} • 
     ${(searchParams.departureDate !== undefined) ? new Date(searchParams.departureDate).toLocaleDateString() : 'Any'}
     ${searchParams.airlineCode ? `• ${searchParams.airlineCode}` : ''}
@@ -73,6 +96,18 @@ export default function FlightsPage() {
     return (
       <div className="relative min-h-screen bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          {/* Header */}
+          <div className="mb-6">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
+              <div>
+                <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+                  {hasActiveSearch ? 'Search Results' : 'Flight Search'}
+                </h1>
+                <h1 className="text-2xl font-bold text-gray-900">{formatSearchSummary()}</h1>
+              </div>
+            </div>
+          </div>
+
           <div className="mb-6">
             <div className="h-4 bg-gray-200 rounded w-64 animate-pulse mb-2"></div>
             <div className="h-8 bg-gray-200 rounded w-96 animate-pulse"></div>
@@ -111,7 +146,7 @@ export default function FlightsPage() {
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
             <div>
               <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
-                Search Results
+                {hasActiveSearch ? 'Search Results' : 'Flight Search'}
               </h1>
               <h1 className="text-2xl font-bold text-gray-900">{formatSearchSummary()}</h1>
             </div>
@@ -121,7 +156,7 @@ export default function FlightsPage() {
                 size="sm"
                 onClick={() => setShowSearchForm(!showSearchForm)}
                 className="flex items-center"
-                disabled={!searchParams}
+                disabled={!hasActiveSearch}
               >
                 <Search className="h-4 w-4 mr-2" />
                 {showSearchForm ? 'Hide Search' : 'Modify Search'}
@@ -146,7 +181,7 @@ export default function FlightsPage() {
         </div>
 
         {/* Search Form Section */}
-        {(showSearchForm || (!searchParams && !loading)) && (
+        {(showSearchForm || (!hasActiveSearch && !loading)) && (
           <motion.div
             key="search-form"
             layout
@@ -160,7 +195,7 @@ export default function FlightsPage() {
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-xl font-semibold text-gray-900 flex items-center">
                       <Search className="h-5 w-5 mr-2 text-blue-600" />
-                      {searchParams ? 'Modify Your Search' : 'Search Flights'}
+                      {hasActiveSearch ? 'Modify Your Search' : 'Search Flights'}
                     </h2>
                   </div>
                   <FlightSearchForm />
@@ -170,7 +205,7 @@ export default function FlightsPage() {
           </motion.div>
         )}
 
-        {flights.length > 0 && (
+        {flights.length > 0 && hasActiveSearch && (
           <motion.div
             key="filters"
             layout
@@ -253,7 +288,7 @@ export default function FlightsPage() {
                     businessPassengers={searchParams?.passengerBusiness || 0}
                     firstClassPassengers={searchParams?.passengerFirstClass || 0}
                   />
-                ))}  
+                ))}
               </div>
             </motion.div>
           </div>
