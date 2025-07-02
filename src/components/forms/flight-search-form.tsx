@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { PassengerSelector } from './passenger-selector'
 import { useFlightStore } from '@/store/flights'
 import type { FlightSearchParams, Airport, Airline } from '@/types'
-import { Search, MapPin, Calendar, Plane } from 'lucide-react'
+import { Search, MapPin, Calendar, Plane, Users } from 'lucide-react'
 
 const flightSearchSchema = (airports: Airport[], airlines: Airline[], anyDate: boolean) => z.object({
   origin: z.string()
@@ -36,7 +36,7 @@ const flightSearchSchema = (airports: Airport[], airlines: Airline[], anyDate: b
   )
 }).superRefine(
   (data, ctx) => {
-    if(data.origin && data.destination && data.origin === data.destination) {
+    if (data.origin && data.destination && data.origin === data.destination) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         message: 'Origin and destination cannot be the same',
@@ -181,7 +181,7 @@ export function FlightSearchForm() {
             {/* Origin */}
             <div className="space-y-2">
               <div className="flex items-center">
-                <label className="text-sm font-medium text-gray-700 flex items-center">
+                <label className="text-sm font-medium text-secondary-foreground flex items-center">
                   <MapPin className="h-4 w-4 mr-1" />
                   From •
                 </label>
@@ -218,7 +218,7 @@ export function FlightSearchForm() {
             {/* Destination */}
             <div className="space-y-2">
               <div className="flex items-center">
-                <label className="text-sm font-medium text-gray-700 flex items-center">
+                <label className="text-sm font-medium text-secondary-foreground flex items-center">
                   <MapPin className="h-4 w-4 mr-1" />
                   To •
                 </label>
@@ -256,8 +256,8 @@ export function FlightSearchForm() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Departure Date */}
             <div className="space-y-2">
-            <div className="flex items-center">
-                <label className="text-sm font-medium text-gray-700 flex items-center">
+              <div className="flex items-center">
+                <label className="text-sm font-medium text-secondary-foreground flex items-center">
                   <Calendar className="h-4 w-4 mr-1" />
                   Departure •
                 </label>
@@ -282,15 +282,21 @@ export function FlightSearchForm() {
             </div>
 
             {/* Passengers */}
-            <PassengerSelector
-              value={passengers}
-              onChange={(selection) => setValue('passengers', selection)}
-              error={errors.passengers?.message}
-            />
+            <div className="space-y-2 relative">
+              <label className="text-sm font-medium text-secondary-foreground flex items-center">
+                <Users className="h-4 w-4 mr-1" />
+                Passengers
+              </label>
+              <PassengerSelector
+                value={passengers}
+                onChange={(selection) => setValue('passengers', selection)}
+                error={errors.passengers?.message}
+              />
+            </div>
 
             {/* Airline */}
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700 flex items-center">
+              <label className="text-sm font-medium text-secondary-foreground flex items-center">
                 <Plane className="h-4 w-4 mr-1" />
                 Airline
               </label>

@@ -26,8 +26,8 @@
   --secondary-foreground: oklch(0.45 0 0); /* #6C757D - Medium gray */
   --muted: oklch(0.96 0 0); /* Very light gray */
   --muted-foreground: oklch(0.45 0 0); /* #6C757D - Medium gray */
-  --accent: oklch(0.55 0.15 145); /* #28A745 - Success green */
-  --accent-foreground: oklch(1 0 0); /* White text on green */
+  --accent: oklch(0.85 0.18 255);
+  --accent-foreground: oklch(1 0 0); /* White text */
   --destructive: oklch(0.55 0.22 25); /* #DC3545 - Error red */
   --border: oklch(0.93 0 0); /* Light gray borders */
   --input: oklch(0.96 0 0); /* Very light gray inputs */
@@ -94,9 +94,9 @@ body {
 }
 
 .dark {
-  --background: oklch(0.08 0 0); /* Very dark background */
+  --background: oklch(27.8% 0.033 256.848); /* Very dark background */
   --foreground: oklch(0.95 0 0); /* Light text */
-  --card: oklch(0.12 0 0); /* Dark card background */
+  --card: oklch(27.8% 0.033 256.848); /* Dark card background */
   --card-foreground: oklch(0.95 0 0);
   --popover: oklch(0.12 0 0);
   --popover-foreground: oklch(0.95 0 0);
@@ -106,7 +106,7 @@ body {
   --secondary-foreground: oklch(0.8 0 0); /* Light gray text */
   --muted: oklch(0.15 0 0); /* Very dark gray */
   --muted-foreground: oklch(0.65 0 0); /* Medium light gray */
-  --accent: oklch(0.65 0.18 145); /* Lighter green for dark mode */
+  --accent: oklch(0.52 0.18 255); /* Lighter green for dark mode */
   --accent-foreground: oklch(0.08 0 0); /* Dark text on green */
   --destructive: oklch(0.65 0.25 25); /* Lighter red for dark mode */
   --border: oklch(0.2 0 0); /* Dark border */
@@ -131,4 +131,19 @@ body {
   /* Font Families */
   --font-sans: var(--font-geist-sans), Inter, sans-serif;
   --font-mono: var(--font-geist-mono), Monaco, monospace;
+}
+
+@layer utilities {
+  .bg-app {
+    background-color: var(--background);
+  }
+  .text-app {
+    color: var(--foreground);
+  }
+  .border-app {
+    border-color: var(--border);
+  }
+  .text-secondary-foreground {
+    @apply text-gray-700 dark:text-gray-300;
+  }
 }
