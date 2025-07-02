@@ -149,7 +149,7 @@ export function RegisterForm() {
               Email
             </label>
             <Input
-              type="email"
+              // type="email"
               {...register('email')}
               placeholder="Enter your email"
               className={errors.email ? 'border-red-500' : ''}
