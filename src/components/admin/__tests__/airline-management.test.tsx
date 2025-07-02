@@ -1,7 +1,8 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { AirlineManagement } from '../airline-management'
 import { vi } from 'vitest'
 import type { Airline } from '@/types'
+import userEvent from '@testing-library/user-event'
 
 const createAirlineMock = vi.fn(() => Promise.resolve())
 const deleteAirlineMock = vi.fn(() => Promise.resolve())
@@ -34,9 +35,9 @@ describe('AirlineManagement', () => {
   it('creates a new airline on form submit', async () => {
     render(<AirlineManagement />)
 
-    fireEvent.change(screen.getByPlaceholderText(/airline code/i), { target: { value: 'CC' } })
-    fireEvent.change(screen.getByPlaceholderText(/airline name/i), { target: { value: 'Charlie Air' } })
-    fireEvent.click(screen.getByRole('button', { name: /create/i }))
+    await userEvent.type(screen.getByPlaceholderText(/airline code/i), 'CC')
+    await userEvent.type(screen.getByPlaceholderText(/airline name/i), 'Charlie Air')
+    await userEvent.click(screen.getByRole('button', { name: /create/i }))
 
     await waitFor(() => {
       expect(createAirlineMock).toHaveBeenCalledWith({ code: 'CC', name: 'Charlie Air', staffCount: 0 })
@@ -48,11 +49,11 @@ describe('AirlineManagement', () => {
 
     // Click first Delete button (for Alpha Air)
     const deleteButtons = screen.getAllByRole('button', { name: /delete/i })
-    fireEvent.click(deleteButtons[0])
+    await userEvent.click(deleteButtons[0])
 
     // Dialog opens; confirm deletion by clicking Delete inside dialog
     const confirmButton = await screen.findAllByRole('button', { name: /^delete$/i })
-    fireEvent.click(confirmButton[confirmButton.length - 1])
+    await userEvent.click(confirmButton[confirmButton.length - 1])
 
     await waitFor(() => {
       expect(deleteAirlineMock).toHaveBeenCalledWith('AA')
