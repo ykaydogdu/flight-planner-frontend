@@ -1,8 +1,9 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { BookingCard } from '../booking-card'
 import { MemoryRouter } from 'react-router-dom'
 import { vi } from 'vitest'
 import type { Booking, FlightClassType } from '@/types'
+import userEvent from '@testing-library/user-event'
 
 const cancelBookingMock = vi.fn(() => Promise.resolve())
 
@@ -68,11 +69,11 @@ describe('BookingCard', () => {
     )
 
     // open alert dialog
-    fireEvent.click(screen.getByRole('button', { name: /cancel booking/i }))
+    await userEvent.click(screen.getByRole('button', { name: /cancel booking/i }))
 
     // confirm inside dialog – the button text is "Yes, Cancel Booking"
     const confirmButton = await screen.findByRole('button', { name: /yes, cancel booking/i })
-    fireEvent.click(confirmButton)
+    await userEvent.click(confirmButton)
 
     await waitFor(() => {
       expect(cancelBookingMock).toHaveBeenCalledWith(123)
