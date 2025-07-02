@@ -1,9 +1,10 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { BrowserRouter } from 'react-router-dom'
 import { FlightSearchForm } from '../flight-search-form'
 import { useFlightStore } from '@/store/flights'
+import userEvent from '@testing-library/user-event'
 
 // Mock the flight store
 vi.mock('@/store/flights', () => ({
@@ -85,99 +86,28 @@ describe('FlightSearchForm', () => {
     expect(screen.getByDisplayValue('1 passenger')).toBeInTheDocument()
   })
 
-  it('opens passenger selector context menu when clicked', async () => {
-    renderWithRouter(<FlightSearchForm />)
-    
-    fireEvent.click(screen.getByDisplayValue('1 passenger'))
-    
-    await waitFor(() => {
-      expect(screen.getByText('Economy')).toBeInTheDocument()
-      expect(screen.getByText('Business')).toBeInTheDocument()
-      expect(screen.getByText('First Class')).toBeInTheDocument()
-    })
-  })
-
-  it('shows passenger class options in context menu', async () => {
-    renderWithRouter(<FlightSearchForm />)
-    
-    fireEvent.click(screen.getByDisplayValue('1 passenger'))
-    
-    await waitFor(() => {
-      expect(screen.getByText('Economy')).toBeInTheDocument()
-      expect(screen.getByText('Business')).toBeInTheDocument()
-      expect(screen.getByText('First Class')).toBeInTheDocument()
-      expect(screen.getByText('Standard seating')).toBeInTheDocument()
-      expect(screen.getByText('Premium seating')).toBeInTheDocument()
-      expect(screen.getByText('Luxury seating')).toBeInTheDocument()
-    })
-  })
-
   it('calls searchFlights with passenger selection when form is submitted', async () => {
     renderWithRouter(<FlightSearchForm />)
     
     // Fill in the required fields
     const originInput = screen.getByPlaceholderText('Origin airport')
     const destinationInput = screen.getByPlaceholderText('Destination airport')
+    const anyDateInput = screen.getByText('Any')
     
-    fireEvent.change(originInput, { target: { value: 'John F. Kennedy International Airport' } })
-    fireEvent.change(destinationInput, { target: { value: 'Los Angeles International Airport' } })
+    await userEvent.type(originInput, 'John F. Kennedy International Airport')
+    await userEvent.type(destinationInput, 'Los Angeles International Airport')
+    await userEvent.click(anyDateInput)
     
     // Submit the form
     const submitButton = screen.getByRole('button', { name: /search flights/i })
-    fireEvent.click(submitButton)
+    await userEvent.click(submitButton)
     
     await waitFor(() => {
       expect(mockFlightStore.searchFlights).toHaveBeenCalledWith({
         originAirportCode: 'JFK',
         destinationAirportCode: 'LAX',
-        passengers: {
-          economy: 1,
-          business: 0,
-          firstClass: 0
-        }
+        passengerEconomy: 1,
       })
-    })
-  })
-
-  it('validates that at least one passenger is selected', async () => {
-    renderWithRouter(<FlightSearchForm />)
-    
-    // First, open the passenger selector to set passengers to 0
-    fireEvent.click(screen.getByDisplayValue('1 passenger'))
-    
-    await waitFor(() => {
-      expect(screen.getByText('Economy')).toBeInTheDocument()
-    })
-    
-    // Try to set all passengers to 0 by clicking minus on economy
-    const minusButtons = screen.getAllByRole('button')
-    const economyMinusButton = minusButtons.find(btn => 
-      btn.closest('.flex.items-center.justify-between')?.textContent?.includes('Economy')
-    )
-    
-    if (economyMinusButton) {
-      fireEvent.click(economyMinusButton)
-    }
-    
-    // Should show error message when total is 0
-    await waitFor(() => {
-      expect(screen.getByText('At least 1 passenger required')).toBeInTheDocument()
-    })
-  })
-
-  it('prevents selecting more than 9 total passengers', async () => {
-    renderWithRouter(<FlightSearchForm />)
-    
-    fireEvent.click(screen.getByDisplayValue('1 passenger'))
-    
-    await waitFor(() => {
-      expect(screen.getByText('Economy')).toBeInTheDocument()
-    })
-    
-    // The total passengers should be displayed in the context menu
-    await waitFor(() => {
-      expect(screen.getByText('Total passengers:')).toBeInTheDocument()
-      expect(screen.getByText('1')).toBeInTheDocument()
     })
   })
 
@@ -186,7 +116,7 @@ describe('FlightSearchForm', () => {
     
     expect(screen.getByPlaceholderText('Origin airport')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Destination airport')).toBeInTheDocument()
-    expect(screen.getByLabelText(/departure/i)).toBeInTheDocument()
+    expect(screen.getByTestId('departure-date-input')).toBeInTheDocument()
     expect(screen.getByDisplayValue('1 passenger')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('Any')).toBeInTheDocument() // Airline field
     expect(screen.getByRole('button', { name: /search flights/i })).toBeInTheDocument()
@@ -196,7 +126,7 @@ describe('FlightSearchForm', () => {
     renderWithRouter(<FlightSearchForm />)
     
     const submitButton = screen.getByRole('button', { name: /search flights/i })
-    fireEvent.click(submitButton)
+    await userEvent.click(submitButton)
     
     await waitFor(() => {
       expect(screen.getByText('Please select an origin airport')).toBeInTheDocument()

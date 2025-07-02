@@ -275,6 +275,7 @@ export function FlightSearchForm() {
                 min={new Date().toISOString().split("T")[0]}
                 className={errors.departureDate ? 'border-red-500' : ''}
                 disabled={anyDate}
+                data-testid="departure-date-input"
               />
               {errors.departureDate && (
                 <p className="text-sm text-red-500">{errors.departureDate.message}</p>
