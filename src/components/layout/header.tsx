@@ -1,7 +1,7 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/store/auth'
-import { Plane, User, LogOut, Sun, Moon } from 'lucide-react'
+import { User, LogOut, Sun, Moon } from 'lucide-react'
 import { useTheme } from '@/context/ThemeContext'
 
 const NO_HEADER_PAGES = ['/login', '/register'];
@@ -28,8 +28,19 @@ export function Header() {
         <div className="flex h-16 items-center justify-between">
           <div className="flex items-center">
             <Link to="/" className="flex items-center space-x-2">
-              <Plane className="h-8 w-8 text-blue-600" />
-              <span className="text-xl font-bold text-foreground">FlightBooker</span>
+              {theme === 'dark' ? (
+                <img src="/dark_icon_transparent.png" alt="FlightBooker" className="h-12 w-12" />
+              ) : (
+                <img src="/icon_transparent.png" alt="FlightBooker" className="h-12 w-12" />
+              )}
+              {theme === 'dark' ? (
+                <span className="text-xl font-bold text-foreground">FlightBooker</span>
+              ) : (
+                <div className="flex items-center space-x-0.2">
+                  <span className="text-xl font-bold text-blue-900">Flight</span>
+                  <span className="text-xl font-bold text-blue-400">Booker</span>
+                </div>
+              )}
             </Link>
           </div>
 
