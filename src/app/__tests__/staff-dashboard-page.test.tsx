@@ -1,5 +1,7 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { vi } from 'vitest'
+import React from 'react'
+import type { OverallStats } from '@/components/staff/flight-management'
 
 const authState: { user: { role: string; airline?: { code: string; name: string; staffCount: number } } } = {
   user: {
@@ -13,7 +15,17 @@ vi.mock('@/store/auth', () => ({
 }))
 
 vi.mock('@/components/staff/flight-management', () => ({
-  FlightManagement: () => <div data-testid="flight-management" />,
+  FlightManagement: ({ setOverallStats }: { setOverallStats: (stats: OverallStats) => void }) => {
+    React.useEffect(() => {
+      setOverallStats({
+        activeFlights: 49,
+        overallBookingCount: 489,
+        overallPassengerCount: 4799,
+        overallRevenue: 4699,
+      })
+    }, [setOverallStats])
+    return <div data-testid="flight-management" />
+  },
 }))
 
 vi.mock('@/components/staff/flight-bookings-view', () => ({
@@ -44,5 +56,17 @@ describe('StaffDashboardPage', () => {
     render(<StaffDashboardPage />)
 
     expect(screen.getByText(/access denied/i)).toBeInTheDocument()
+  })
+
+  it('show overall stats correctly when stats are loaded', async () => {
+    authState.user.role = 'ROLE_AIRLINE_STAFF'
+    render(<StaffDashboardPage />)
+
+    await waitFor(() => {
+      expect(screen.getByText(/49/i)).toBeInTheDocument()
+      expect(screen.getByText(/489/i)).toBeInTheDocument()
+      expect(screen.getByText(/4799/i)).toBeInTheDocument() 
+      expect(screen.getByText(/4,699/i)).toBeInTheDocument() 
+    })
   })
 }) 
