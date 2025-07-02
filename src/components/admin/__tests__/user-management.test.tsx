@@ -1,8 +1,9 @@
 import React from 'react'
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { UserManagement } from '../user-management'
 import { vi } from 'vitest'
 import type { User, Airline } from '@/types'
+import userEvent from '@testing-library/user-event'
 
 // Silence alerts in tests
 window.alert = vi.fn()
@@ -26,12 +27,12 @@ const usersMock: User[] = [
     lastName: 'Member',
     email: 'staff@example.com',
     role: 'ROLE_AIRLINE_STAFF',
-    airline: { code: 'AA', name: 'Alpha Air', staffCount: 0 },
+    airline: { code: 'AA', name: 'Alpha Air', staffCount: 1 },
   },
 ]
 
 const airlinesMock: Airline[] = [
-  { code: 'AA', name: 'Alpha Air', staffCount: 0 },
+  { code: 'AA', name: 'Alpha Air', staffCount: 1 },
   { code: 'BB', name: 'Beta Air', staffCount: 0 },
 ]
 
@@ -53,7 +54,7 @@ vi.mock('@/store/airlines', () => ({
 
 // Stub Select components with basic HTML <select>
 vi.mock('@/components/ui/select', () => {
-  const Select = ({ children, onValueChange, defaultValue }: any) => (
+  const Select = ({ children, onValueChange, defaultValue }: { children: React.ReactNode, onValueChange: (value: string) => void, defaultValue: string }) => (
     <select
       role="combobox"
       defaultValue={defaultValue}
@@ -64,8 +65,8 @@ vi.mock('@/components/ui/select', () => {
     </select>
   )
 
-  const SelectItem = ({ children, value }: any) => <option value={value}>{children}</option>
-  const Stub = ({ children }: any) => <>{children}</>
+  const SelectItem = ({ children, value }: { children: React.ReactNode, value: string }) => <option value={value}>{children}</option>
+  const Stub = ({ children }: { children: React.ReactNode }) => <>{children}</>
 
   return {
     Select,
@@ -79,7 +80,7 @@ vi.mock('@/components/ui/select', () => {
 // Mock motion to simple passthrough components
 vi.mock('motion/react', () => ({
   motion: new Proxy({}, {
-    get: () => (props: any) => <div {...props}>{props.children}</div>,
+    get: () => (props: { children: React.ReactNode }) => <div {...props}>{props.children}</div>,
   }),
 }))
 
@@ -96,14 +97,14 @@ describe('UserManagement', () => {
 
     // Change role for first user (john)
     const roleSelect = screen.getAllByRole('combobox')[0]
-    fireEvent.change(roleSelect, { target: { value: 'ROLE_ADMIN' } })
+    await userEvent.selectOptions(roleSelect, 'ROLE_ADMIN')
 
     // Click Assign button that appears
-    fireEvent.click(await screen.findByRole('button', { name: /assign/i }))
+    await userEvent.click(await screen.findByRole('button', { name: /assign/i }))
 
     // Confirm in dialog
     const confirmBtn = await screen.findByRole('button', { name: /confirm/i })
-    fireEvent.click(confirmBtn)
+    await userEvent.click(confirmBtn)
 
     await waitFor(() => {
       expect(assignRoleMock).toHaveBeenCalledWith('john', 'ROLE_ADMIN')
@@ -114,14 +115,13 @@ describe('UserManagement', () => {
     render(<UserManagement />)
 
     // Airline select is the second combobox (for staff user)
-    const selects = screen.getAllByRole('combobox')
-    const airlineSelect = selects[1]
-    fireEvent.change(airlineSelect, { target: { value: 'BB' } })
+    const airlineSelect = screen.getAllByRole('combobox')[1]
+    await userEvent.selectOptions(airlineSelect, 'BB')
 
-    fireEvent.click(await screen.findByRole('button', { name: /assign/i }))
+    await userEvent.click(await screen.findByRole('button', { name: /assign/i }))
 
     const confirmBtn = await screen.findByRole('button', { name: /confirm/i })
-    fireEvent.click(confirmBtn)
+    await userEvent.click(confirmBtn)
 
     await waitFor(() => {
       expect(assignAirlineMock).toHaveBeenCalledWith('staff', 'BB')
