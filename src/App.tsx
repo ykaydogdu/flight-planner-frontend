@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { Routes, Route } from 'react-router-dom'
 import './App.css'
 
@@ -14,21 +13,18 @@ import BookingPage from './app/booking/page'
 import backgroundImage from '/images/background.jpeg'
 import darkBackgroundImage from '/images/dark-background.jpeg'
 
+import { useTheme } from '@/context/ThemeContext'
+
 function App() {
-  const [darkMode, setDarkMode] = useState(false)
-  const toggleDarkMode = () => {
-    const body = document.body
-    body.classList.toggle('dark')
-    setDarkMode(!darkMode)
-  }
+  const { theme } = useTheme();
 
   return (
     <div className="min-h-screen">
-      <Header toggleDarkMode={toggleDarkMode} />
+      <Header />
       <div>
         {/* Blurred Background */}
         <div className="fixed inset-0 -z-10">
-          <div className="absolute inset-0 bg-cover bg-center blur-sm" style={{ backgroundImage: `url(${darkMode ? darkBackgroundImage : backgroundImage})` }} />
+          <div className="absolute inset-0 bg-cover bg-center blur-sm" style={{ backgroundImage: `url(${theme === 'dark' ? darkBackgroundImage : backgroundImage})` }} />
           <div className="absolute inset-0 bg-white/40 dark:bg-gray-600/20 backdrop-blur-sm" />
         </div>
         <div className="relative z-10">

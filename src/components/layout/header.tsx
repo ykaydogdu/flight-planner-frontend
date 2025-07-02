@@ -2,10 +2,12 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { useAuthStore } from '@/store/auth'
 import { Plane, User, LogOut, Sun, Moon } from 'lucide-react'
+import { useTheme } from '@/context/ThemeContext'
 
 const NO_HEADER_PAGES = ['/login', '/register'];
 
-export function Header({ toggleDarkMode }: { toggleDarkMode: () => void }) {
+export function Header() {
+  const { theme, toggleTheme } = useTheme();
   const { user, isAuthenticated, logout } = useAuthStore()
   const navigate = useNavigate()
   const location = useLocation()
@@ -66,8 +68,8 @@ export function Header({ toggleDarkMode }: { toggleDarkMode: () => void }) {
 
           <div className="flex items-center space-x-4">
             {/* Dark Mode Toggle */}
-            <Button variant="ghost" size="icon" onClick={toggleDarkMode} className="text-secondary-foreground hover:text-blue-600">
-              {document.body.classList.contains('dark') ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            <Button variant="ghost" size="icon" onClick={toggleTheme} className="text-secondary-foreground hover:text-blue-600">
+              {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </Button>
 
             {isAuthenticated ? (
