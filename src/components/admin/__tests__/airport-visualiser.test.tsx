@@ -1,7 +1,9 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import React from 'react'
+import { render, screen } from '@testing-library/react'
 import { AirportVisualiser } from '../airport-visualiser'
 import { vi } from 'vitest'
 import type { Airport } from '@/types'
+import userEvent from '@testing-library/user-event'
 
 // Mock react-leaflet primitives to avoid rendering real maps
 vi.mock('react-leaflet', () => ({
@@ -33,7 +35,7 @@ describe('AirportVisualiser', () => {
     expect(screen.getAllByTestId('marker')).toHaveLength(airportsMock.length)
   })
 
-  it('invokes callback when marker is clicked', () => {
+  it('invokes callback when marker is clicked', async () => {
     const selectMock = vi.fn()
     render(
       <AirportVisualiser
@@ -43,7 +45,7 @@ describe('AirportVisualiser', () => {
       />,
     )
 
-    fireEvent.click(screen.getAllByTestId('marker')[0])
+    await userEvent.click(screen.getAllByTestId('marker')[0])
     expect(selectMock).toHaveBeenCalledWith(airportsMock[0])
   })
 }) 

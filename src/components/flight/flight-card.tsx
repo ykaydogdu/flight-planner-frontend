@@ -79,7 +79,7 @@ export const FlightCard = React.memo(function FlightCard({ flight, economyPassen
 
   const handleBooking = (e: React.MouseEvent) => {
     e.stopPropagation()
-    navigate(`/booking/${flight.id}?&passengerEconomy=${economyPassengers}&passengerBusiness=${businessPassengers}&passengerFirstClass=${firstClassPassengers}`)
+    navigate(`/booking/${flight.id}?passengerEconomy=${economyPassengers}&passengerBusiness=${businessPassengers}&passengerFirstClass=${firstClassPassengers}`)
   }
 
   return (

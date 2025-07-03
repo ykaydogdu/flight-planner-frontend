@@ -137,56 +137,6 @@ export function UserManagement() {
                 </div>
 
                 <div className="flex items-center gap-3">
-                  {/* Role Assignment */}
-                  <div className="flex items-center gap-2">
-                    <motion.div layout>
-                      <Select onValueChange={(value) => setSelectedRole({ ...selectedRole, [user.username]: value })} defaultValue={user.role}>
-                        <SelectTrigger className="w-40">
-                          <SelectValue placeholder="Change role..." />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="ROLE_USER">User</SelectItem>
-                          <SelectItem value="ROLE_AIRLINE_STAFF">Airline Staff</SelectItem>
-                          <SelectItem value="ROLE_ADMIN">Admin</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </motion.div>
-
-                    {selectedRole[user.username] && selectedRole[user.username] !== user.role && (
-                      <motion.div
-                        key="assign-button"
-                        layout
-                        initial={{ opacity: 0, scale: 0.8, x: -20 }}
-                        animate={{ opacity: 1, scale: 1, x: 0 }}
-                        exit={{ opacity: 0, scale: 0.8, x: -20 }}
-                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
-                      >
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button size="sm">Assign</Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>Confirm Role Assignment</AlertDialogTitle>
-                              <AlertDialogDescription>
-                                Are you sure you want to assign the role {selectedRole[user.username].replace('ROLE_', '')} to {user.username}?
-                                {selectedRole[user.username] !== 'ROLE_AIRLINE_STAFF' && user.airline && (
-                                  <span className="text-destructive"> This will also remove their airline assignment.</span>
-                                )}
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Cancel</AlertDialogCancel>
-                              <AlertDialogAction onClick={() => handleRoleAssignment(user.username, selectedRole[user.username])}>
-                                Confirm
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </motion.div>
-                    )}
-                  </div>
-
                   {/* Airline Assignment */}
                   {user.role === 'ROLE_AIRLINE_STAFF' && (
                     <div className="flex items-center gap-2">
@@ -238,6 +188,56 @@ export function UserManagement() {
                       )}
                     </div>
                   )}
+                  
+                  {/* Role Assignment */}
+                  <div className="flex items-center gap-2">
+                    <motion.div layout>
+                      <Select onValueChange={(value) => setSelectedRole({ ...selectedRole, [user.username]: value })} defaultValue={user.role}>
+                        <SelectTrigger className="w-40">
+                          <SelectValue placeholder="Change role..." />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="ROLE_USER">User</SelectItem>
+                          <SelectItem value="ROLE_AIRLINE_STAFF">Airline Staff</SelectItem>
+                          <SelectItem value="ROLE_ADMIN">Admin</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </motion.div>
+
+                    {selectedRole[user.username] && selectedRole[user.username] !== user.role && (
+                      <motion.div
+                        key="assign-button"
+                        layout
+                        initial={{ opacity: 0, scale: 0.8, x: -20 }}
+                        animate={{ opacity: 1, scale: 1, x: 0 }}
+                        exit={{ opacity: 0, scale: 0.8, x: -20 }}
+                        transition={{ type: 'spring', stiffness: 300, damping: 20 }}
+                      >
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button size="sm">Assign</Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>Confirm Role Assignment</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you want to assign the role {selectedRole[user.username].replace('ROLE_', '')} to {user.username}?
+                                {selectedRole[user.username] !== 'ROLE_AIRLINE_STAFF' && user.airline && (
+                                  <span className="text-red-600"> This will also remove their airline assignment.</span>
+                                )}
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancel</AlertDialogCancel>
+                              <AlertDialogAction onClick={() => handleRoleAssignment(user.username, selectedRole[user.username])}>
+                                Confirm
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </motion.div>
+                    )}
+                  </div>
                 </div>
               </div>
             )

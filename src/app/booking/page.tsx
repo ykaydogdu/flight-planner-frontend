@@ -139,6 +139,11 @@ export default function BookingPage() {
 
     // Basic validation
     for (const passenger of passengersData) {
+      if (passenger.priceAtBooking === 0) {
+        passenger.priceAtBooking = flight.classes.find(c => c.flightClass === passenger.flightClass)?.price || 0
+      }
+
+
       if (!passenger.firstName.trim() || !passenger.lastName.trim() || !passenger.email.trim()) {
         setError('Please fill in all required fields for all passengers')
         return

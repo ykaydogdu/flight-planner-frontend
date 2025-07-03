@@ -1,7 +1,8 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { LoginForm } from '../login-form'
 import { MemoryRouter } from 'react-router-dom'
 import { vi } from 'vitest'
+import userEvent from '@testing-library/user-event'
 
 // Mock the auth store so we can observe the login call
 const loginMock = vi.fn(() => Promise.resolve())
@@ -12,12 +13,13 @@ vi.mock('@/store/auth', () => ({
   }),
 }))
 
-// Mock react-router navigate so the component can render without errors
+const navigateMock = vi.fn()
+
 vi.mock('react-router-dom', async () => {
   const actual = await vi.importActual<typeof import('react-router-dom')>('react-router-dom')
   return {
     ...actual,
-    useNavigate: () => vi.fn(),
+    useNavigate: () => navigateMock,
   }
 })
 
@@ -41,7 +43,7 @@ describe('LoginForm', () => {
       </MemoryRouter>,
     )
 
-    fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
+    await userEvent.click(screen.getByRole('button', { name: /sign in/i }))
 
     expect(await screen.findByText(/username is required/i)).toBeInTheDocument()
     expect(await screen.findByText(/password is required/i)).toBeInTheDocument()
@@ -55,16 +57,45 @@ describe('LoginForm', () => {
       </MemoryRouter>,
     )
 
-    fireEvent.change(screen.getByPlaceholderText(/username/i), {
-      target: { value: 'john' },
-    })
-    fireEvent.change(screen.getByPlaceholderText(/password/i), {
-      target: { value: 'secret' },
-    })
-    fireEvent.click(screen.getByRole('button', { name: /sign in/i }))
+    await userEvent.type(screen.getByPlaceholderText(/username/i), 'john')
+    await userEvent.type(screen.getByPlaceholderText(/password/i), 'secret')
+    await userEvent.click(screen.getByRole('button', { name: /sign in/i }))
+
+    expect(loginMock).toHaveBeenCalledWith({ username: 'john', password: 'secret' })
+  })
+
+  it('shows error message when login fails', async () => {
+    loginMock.mockRejectedValueOnce(new Error('Invalid credentials'))
+
+    render(
+      <MemoryRouter>
+        <LoginForm />
+      </MemoryRouter>,
+    )
+
+    await userEvent.type(screen.getByPlaceholderText(/username/i), 'john')
+    await userEvent.type(screen.getByPlaceholderText(/password/i), 'secret')
+    await userEvent.click(screen.getByRole('button', { name: /sign in/i }))
+
+    expect(await screen.findByText(/invalid credentials/i)).toBeInTheDocument()
+    expect(loginMock).toHaveBeenCalledWith({ username: 'john', password: 'secret' })
+  })
+
+  it('navigates to home page when login is successful', async () => {
+    render(
+      <MemoryRouter>
+        <LoginForm />
+      </MemoryRouter>,
+    )
+
+    await userEvent.type(screen.getByPlaceholderText(/username/i), 'john')
+    await userEvent.type(screen.getByPlaceholderText(/password/i), 'secret')
+    await userEvent.click(screen.getByRole('button', { name: /sign in/i }))
+
+    expect(loginMock).toHaveBeenCalledWith({ username: 'john', password: 'secret' })
 
     await waitFor(() => {
-      expect(loginMock).toHaveBeenCalledWith({ username: 'john', password: 'secret' })
+      expect(navigateMock).toHaveBeenCalledWith('/')
     })
   })
 }) 

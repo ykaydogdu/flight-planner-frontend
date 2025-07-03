@@ -1,7 +1,8 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { PassengerSelector } from '../passenger-selector'
 import type { PassengerSelection } from '@/types'
+import userEvent from '@testing-library/user-event'
 
 describe('PassengerSelector', () => {
   const mockOnChange = vi.fn()
@@ -52,7 +53,7 @@ describe('PassengerSelector', () => {
       />
     )
     
-    fireEvent.click(screen.getByDisplayValue('1 passenger'))
+    await userEvent.click(screen.getByDisplayValue('1 passenger'))
     
     await waitFor(() => {
       expect(screen.getByText('Economy')).toBeInTheDocument()
@@ -69,7 +70,7 @@ describe('PassengerSelector', () => {
       />
     )
     
-    fireEvent.click(screen.getByDisplayValue('1 passenger'))
+    await userEvent.click(screen.getByDisplayValue('1 passenger'))
     
     await waitFor(() => {
       expect(screen.getByText('Economy')).toBeInTheDocument()
@@ -89,16 +90,15 @@ describe('PassengerSelector', () => {
       />
     )
     
-    fireEvent.click(screen.getByDisplayValue('1 passenger'))
+    await userEvent.click(screen.getByDisplayValue('1 passenger'))
     
     await waitFor(() => {
-      const economySection = screen.getByText('Economy').closest('div')
-      const plusButton = economySection?.querySelector('button:last-child')
-      fireEvent.click(plusButton!)
+      const plusButton = screen.getByTestId('economy-plus-button')
+      userEvent.click(plusButton)
     })
     
     // Click outside to confirm changes
-    fireEvent.mouseDown(document.body)
+    await userEvent.click(document.body)
     
     expect(mockOnChange).toHaveBeenCalledWith({
       economy: 2,
@@ -121,16 +121,15 @@ describe('PassengerSelector', () => {
       />
     )
     
-    fireEvent.click(screen.getByDisplayValue('3 passengers'))
+    await userEvent.click(screen.getByDisplayValue('3 passengers'))
     
     await waitFor(() => {
-      const businessSection = screen.getByText('Business').closest('div')
-      const minusButton = businessSection?.querySelector('button:first-of-type')
-      fireEvent.click(minusButton!)
+      const minusButton = screen.getByTestId('business-minus-button')
+      userEvent.click(minusButton)
     })
     
     // Click outside to confirm changes
-    fireEvent.mouseDown(document.body)
+    await userEvent.click(document.body)
     
     expect(mockOnChange).toHaveBeenCalledWith({
       economy: 2,
@@ -147,11 +146,10 @@ describe('PassengerSelector', () => {
       />
     )
     
-    fireEvent.click(screen.getByDisplayValue('1 passenger'))
+    await userEvent.click(screen.getByDisplayValue('1 passenger'))
     
     await waitFor(() => {
-      const businessSection = screen.getByText('Business').closest('div')
-      const minusButton = businessSection?.querySelector('button:first-of-type')
+      const minusButton = screen.getByTestId('business-minus-button')
       expect(minusButton).toBeDisabled()
     })
   })
@@ -170,11 +168,10 @@ describe('PassengerSelector', () => {
       />
     )
     
-    fireEvent.click(screen.getByDisplayValue('9 passengers'))
+    await userEvent.click(screen.getByDisplayValue('9 passengers'))
     
     await waitFor(() => {
-      const businessSection = screen.getByText('Business').closest('div')
-      const plusButton = businessSection?.querySelector('button:last-child')
+      const plusButton = screen.getByTestId('business-plus-button')
       expect(plusButton).toBeDisabled()
     })
   })
@@ -200,14 +197,14 @@ describe('PassengerSelector', () => {
     )
     
     // Open context menu
-    fireEvent.click(screen.getByDisplayValue('1 passenger'))
+    await userEvent.click(screen.getByDisplayValue('1 passenger'))
     
     await waitFor(() => {
       expect(screen.getByText('Economy')).toBeInTheDocument()
     })
     
     // Close context menu by clicking trigger again
-    fireEvent.click(screen.getByDisplayValue('1 passenger'))
+    await userEvent.click(screen.getByDisplayValue('1 passenger'))
     
     await waitFor(() => {
       expect(screen.queryByText('Standard seating')).not.toBeInTheDocument()
@@ -228,7 +225,7 @@ describe('PassengerSelector', () => {
       />
     )
     
-    fireEvent.click(screen.getByDisplayValue('4 passengers'))
+    await userEvent.click(screen.getByDisplayValue('4 passengers'))
     
     await waitFor(() => {
       expect(screen.getByText('Total passengers:')).toBeInTheDocument()

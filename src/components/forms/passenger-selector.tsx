@@ -110,6 +110,7 @@ export function PassengerSelector({ value, onChange, error }: PassengerSelectorP
                     onClick={() => handleDecrement('economy')}
                     disabled={tempSelection.economy === 0}
                     className="h-7 w-7 p-0"
+                    data-testid="economy-minus-button"
                   >
                     <Minus className="h-3 w-3" />
                   </Button>
@@ -121,6 +122,7 @@ export function PassengerSelector({ value, onChange, error }: PassengerSelectorP
                     onClick={() => handleIncrement('economy')}
                     disabled={tempTotal >= 9}
                     className="h-7 w-7 p-0"
+                    data-testid="economy-plus-button"
                   >
                     <Plus className="h-3 w-3" />
                   </Button>
@@ -141,6 +143,7 @@ export function PassengerSelector({ value, onChange, error }: PassengerSelectorP
                     onClick={() => handleDecrement('business')}
                     disabled={tempSelection.business === 0}
                     className="h-7 w-7 p-0"
+                    data-testid="business-minus-button"
                   >
                     <Minus className="h-3 w-3" />
                   </Button>
@@ -152,6 +155,7 @@ export function PassengerSelector({ value, onChange, error }: PassengerSelectorP
                     onClick={() => handleIncrement('business')}
                     disabled={tempTotal >= 9}
                     className="h-7 w-7 p-0"
+                    data-testid="business-plus-button"
                   >
                     <Plus className="h-3 w-3" />
                   </Button>
@@ -172,6 +176,7 @@ export function PassengerSelector({ value, onChange, error }: PassengerSelectorP
                     onClick={() => handleDecrement('firstClass')}
                     disabled={tempSelection.firstClass === 0}
                     className="h-7 w-7 p-0"
+                    data-testid="first-class-minus-button"
                   >
                     <Minus className="h-3 w-3" />
                   </Button>
@@ -183,6 +188,7 @@ export function PassengerSelector({ value, onChange, error }: PassengerSelectorP
                     onClick={() => handleIncrement('firstClass')}
                     disabled={tempTotal >= 9}
                     className="h-7 w-7 p-0"
+                    data-testid="first-class-plus-button"
                   >
                     <Plus className="h-3 w-3" />
                   </Button>

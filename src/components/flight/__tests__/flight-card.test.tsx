@@ -1,8 +1,9 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import { FlightCard } from '../flight-card'
 import { MemoryRouter } from 'react-router-dom'
 import { vi } from 'vitest'
 import type { Flight } from '@/types'
+import userEvent from '@testing-library/user-event'
 
 // Mock navigate
 const navigateMock = vi.fn()
@@ -14,7 +15,7 @@ vi.mock('react-router-dom', async () => {
 describe('FlightCard', () => {
   const mockFlight: Flight = {
     id: 1,
-    price: 200,
+    minPrice: 200,
     seatCount: 180,
     emptySeats: 25,
     departureTime: new Date('2025-01-01T10:00:00Z').toISOString(),
@@ -40,12 +41,20 @@ describe('FlightCard', () => {
       latitude: 0,
       longitude: 0,
     },
+    classes: [
+      {
+        flightClass: 'ECONOMY',
+        price: 200,
+        seatCount: 180,
+        availableSeats: 25,
+      }
+    ],
   }
 
   it('renders airline name and price per passenger', () => {
     render(
       <MemoryRouter>
-        <FlightCard flight={mockFlight} passengers={1} />
+        <FlightCard flight={mockFlight} economyPassengers={1} businessPassengers={0} firstClassPassengers={0} />
       </MemoryRouter>,
     )
 
@@ -53,10 +62,10 @@ describe('FlightCard', () => {
     expect(screen.getByText('$200 per person')).toBeInTheDocument()
   })
 
-  it('shows expandable details when card is clicked', () => {
+  it('shows expandable details when card is clicked', async () => {
     render(
       <MemoryRouter>
-        <FlightCard flight={mockFlight} passengers={1} />
+        <FlightCard flight={mockFlight} economyPassengers={1} businessPassengers={0} firstClassPassengers={0} />
       </MemoryRouter>,
     )
 
@@ -64,20 +73,20 @@ describe('FlightCard', () => {
     expect(screen.queryByText(/flight number/i)).not.toBeInTheDocument()
 
     // Click card to expand
-    fireEvent.click(screen.getByText(/example airline/i))
+    await userEvent.click(screen.getByText(/example airline/i))
 
     expect(screen.getByText(/flight number/i)).toBeInTheDocument()
   })
 
-  it('navigates to booking page when "Select Flight" button is clicked', () => {
+  it('navigates to booking page when "Select Flight" button is clicked', async () => {
     render(
       <MemoryRouter>
-        <FlightCard flight={mockFlight} passengers={1} />
+        <FlightCard flight={mockFlight} economyPassengers={1} businessPassengers={0} firstClassPassengers={0} />
       </MemoryRouter>,
     )
 
-    fireEvent.click(screen.getByRole('button', { name: /select flight/i }))
+    await userEvent.click(screen.getByRole('button', { name: /select flight/i }))
 
-    expect(navigateMock).toHaveBeenCalledWith('/booking/1?passengers=1')
+    expect(navigateMock).toHaveBeenCalledWith('/booking/1?passengerEconomy=1&passengerBusiness=0&passengerFirstClass=0')
   })
 }) 

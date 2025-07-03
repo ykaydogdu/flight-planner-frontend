@@ -1,15 +1,16 @@
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, waitFor } from '@testing-library/react'
 import { FlightFilters } from '../flight-filters'
 import { vi } from 'vitest'
 import type { Flight } from '@/types'
+import userEvent from '@testing-library/user-event'
 
 const onFilterChangeMock = vi.fn()
 
 const flightsMock: Flight[] = [
   {
     id: 1,
-    price: 100,
-    seatCount: 100,
+    minPrice: 100,
+    seatCount: 100, 
     emptySeats: 50,
     departureTime: new Date('2025-01-01T08:00:00Z').toISOString(),
     duration: 60,
@@ -31,10 +32,18 @@ const flightsMock: Flight[] = [
       latitude: 0,
       longitude: 0,
     },
+    classes: [
+      {
+        flightClass: 'ECONOMY',
+        price: 200,
+        seatCount: 180,
+        availableSeats: 25,
+      }
+    ],
   },
   {
     id: 2,
-    price: 500,
+    minPrice: 500,
     seatCount: 100,
     emptySeats: 20,
     departureTime: new Date('2025-01-01T20:00:00Z').toISOString(),
@@ -57,42 +66,61 @@ const flightsMock: Flight[] = [
       latitude: 0,
       longitude: 0,
     },
+    classes: [
+      {
+        flightClass: 'ECONOMY',
+        price: 200,
+        seatCount: 180,
+        availableSeats: 25,
+      }
+    ],
   },
 ]
 
 describe('FlightFilters', () => {
-  it('filters flights by airline when checkbox toggled and Apply Filters clicked', () => {
+  beforeEach(() => {
+    onFilterChangeMock.mockClear()
+  })
+
+  it('filters flights by airline when checkbox toggled and Apply Filters clicked', async () => {
     render(
       <FlightFilters flights={flightsMock} onFilterChange={onFilterChangeMock} />,
     )
 
     // Select Beta Air airline checkbox
     const betaCheckbox = screen.getByLabelText(/beta air/i)
-    fireEvent.click(betaCheckbox)
+    await userEvent.click(betaCheckbox)
 
     // Apply filters
-    fireEvent.click(screen.getByRole('button', { name: /apply filters/i }))
+    await userEvent.click(screen.getByRole('button', { name: /apply filters/i }))
 
-    // onFilterChange should be eventually called with only flight id 2
+    // onFilterChange should eventually be called with only flight id 2
     const expected = flightsMock.filter((f) => f.airline.code === 'BB')
 
-    // Because filtering is synchronous inside useEffect after state update, the last call arg should equal expected
-    expect(onFilterChangeMock.mock.calls.pop()?.[0]).toEqual(expected)
+    await waitFor(() => {
+      expect(onFilterChangeMock).toHaveBeenCalled()
+      const lastCall = onFilterChangeMock.mock.calls.pop()?.[0]
+      expect(lastCall).toEqual(expected)
+    })
   })
 
-  it('clears filters when "Clear All" clicked', () => {
+  it('clears filters when "Clear All" clicked', async () => {
     render(
       <FlightFilters flights={flightsMock} onFilterChange={onFilterChangeMock} />,
     )
 
     // Adjust price max to lower than second flight price
-    fireEvent.change(screen.getAllByPlaceholderText('Max')[0], { target: { value: '200' } })
-    fireEvent.click(screen.getByRole('button', { name: /apply filters/i }))
+    await userEvent.type(screen.getAllByPlaceholderText('Max')[0], '200')
+    await userEvent.click(screen.getByRole('button', { name: /apply filters/i }))
 
     // Now clear all
-    fireEvent.click(screen.getByRole('button', { name: /clear all/i }))
+    await userEvent.click(screen.getByRole('button', { name: /clear all/i }))
 
     // onFilterChange should eventually include all flights again
-    expect(onFilterChangeMock.mock.calls.pop()?.[0]).toEqual(flightsMock)
+    await waitFor(() => {
+      expect(onFilterChangeMock).toHaveBeenCalled()
+      const lastCall = onFilterChangeMock.mock.calls.pop()?.[0]
+      expect(lastCall).toEqual(flightsMock)
+    })
   })
 }) 
