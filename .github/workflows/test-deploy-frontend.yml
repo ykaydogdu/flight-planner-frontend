@@ -62,7 +62,7 @@ jobs:
 
       - name: Build & Push Frontend Docker image
         run: |
-          docker build -t $FRONTEND_IMAGE .
+          docker build -t $FRONTEND_IMAGE --build-arg VITE_API_BASE_URL=https://flight-planner-backend-323247003818.us-central1.run.app/api/v1 .
           docker push $FRONTEND_IMAGE
 
       - name: Deploy Frontend to Cloud Run
@@ -71,5 +71,4 @@ jobs:
             --image=$FRONTEND_IMAGE \
             --platform=managed \
             --region=us-central1 \
-            --allow-unauthenticated \
-            --set-env-vars="VITE_API_BASE_URL=https://flight-planner-backend-323247003818.us-central1.run.app/api/v1"
+            --allow-unauthenticated
