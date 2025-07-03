@@ -4,6 +4,7 @@ import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { vi } from 'vitest'
 import type { AuthState } from '@/store/auth'
 import userEvent from '@testing-library/user-event'
+import { ThemeProvider } from '@/context/ThemeContext'
 
 const logoutMock = vi.fn()
 
@@ -24,11 +25,13 @@ vi.mock('@/store/auth', () => ({
 
 function renderWithRoute(path: string) {
   return render(
-    <MemoryRouter initialEntries={[path]}>
-      <Routes>
-        <Route path="*" element={<Header />} />
-      </Routes>
-    </MemoryRouter>,
+    <ThemeProvider>
+      <MemoryRouter initialEntries={[path]}>
+        <Routes>
+          <Route path="*" element={<Header />} />
+        </Routes>
+      </MemoryRouter>
+    </ThemeProvider>,
   )
 }
 

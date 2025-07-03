@@ -208,6 +208,9 @@ export function PassengerSelector({ value, onChange, error }: PassengerSelectorP
                 {tempTotal === 0 && (
                   <p className="text-xs text-red-500 mt-1">At least 1 passenger required</p>
                 )}
+                {error && (
+                  <p className="text-xs text-red-500 mt-1">{error}</p>
+                )}
               </div>
             </div>
           </div>

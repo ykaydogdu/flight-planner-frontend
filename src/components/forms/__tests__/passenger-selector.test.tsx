@@ -176,7 +176,7 @@ describe('PassengerSelector', () => {
     })
   })
 
-  it('shows error message when provided', () => {
+  it('shows error message when provided', async () => {
     render(
       <PassengerSelector 
         value={defaultPassengers} 
@@ -184,7 +184,15 @@ describe('PassengerSelector', () => {
         error="Test error message"
       />
     )
+
+    // Open context menu
+    await userEvent.click(screen.getByDisplayValue('1 passenger'))
     
+    await waitFor(() => {
+      expect(screen.getByText('Economy')).toBeInTheDocument()
+    })
+    
+    // Check for error message  
     expect(screen.getByText('Test error message')).toBeInTheDocument()
   })
 
