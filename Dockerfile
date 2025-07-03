@@ -2,6 +2,11 @@ FROM node:22-alpine AS build
 RUN npm install -g pnpm
 WORKDIR /app
 COPY . .
+
+# Inject build-time env var
+ARG VITE_API_BASE_URL
+ENV VITE_API_BASE_URL=${VITE_API_BASE_URL}
+
 RUN pnpm install
 RUN pnpm run build
 
