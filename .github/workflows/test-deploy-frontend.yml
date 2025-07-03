@@ -1,4 +1,4 @@
-name: Frontend Lint & Test
+name: Frontend Test & Deploy
 
 env:
   FRONTEND_IMAGE: us-central1-docker.pkg.dev/flight-planner-app-464807/flight-planner-frontend/frontend
@@ -13,6 +13,7 @@ on:
 
 jobs:
   test:
+    name: Run Lint & Tests
     runs-on: ubuntu-latest
 
     strategy:
@@ -70,4 +71,5 @@ jobs:
             --image=$FRONTEND_IMAGE \
             --platform=managed \
             --region=us-central1 \
-            --allow-unauthenticated
+            --allow-unauthenticated \
+            --set-env-vars="VITE_API_BASE_URL=https://flight-planner-backend-323247003818.us-central1.run.app/api/v1"
