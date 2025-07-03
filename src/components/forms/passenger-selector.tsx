@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Users, Plus, Minus, ChevronDown } from 'lucide-react'
+import { Plus, Minus, ChevronDown } from 'lucide-react'
 import type { PassengerSelection } from '@/types'
 
 interface PassengerSelectorProps {
@@ -72,12 +72,7 @@ export function PassengerSelector({ value, onChange, error }: PassengerSelectorP
   const tempTotal = getTotalPassengers(tempSelection)
 
   return (
-    <div className="space-y-2 relative">
-      <label className="text-sm font-medium text-gray-700 flex items-center">
-        <Users className="h-4 w-4 mr-1" />
-        Passengers
-      </label>
-      
+    <>
       <div className="relative" ref={triggerRef}>
         <div
           className={`flex items-center justify-between cursor-pointer ${error ? 'border-red-500' : ''}`}
@@ -98,14 +93,14 @@ export function PassengerSelector({ value, onChange, error }: PassengerSelectorP
         {isOpen && (
           <div 
             ref={dropdownRef}
-            className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-200 rounded-md shadow-lg z-50 p-4"
+            className="absolute top-full left-0 right-0 mt-1 bg-card border border-app rounded-md shadow-lg z-50 p-4"
           >
             <div className="space-y-4">
               {/* Economy Class */}
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium text-sm">Economy</div>
-                  <div className="text-xs text-gray-500">Standard seating</div>
+                  <div className="text-xs text-secondary-foreground">Standard seating</div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
@@ -136,7 +131,7 @@ export function PassengerSelector({ value, onChange, error }: PassengerSelectorP
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium text-sm">Business</div>
-                  <div className="text-xs text-gray-500">Premium seating</div>
+                  <div className="text-xs text-secondary-foreground">Premium seating</div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
@@ -167,7 +162,7 @@ export function PassengerSelector({ value, onChange, error }: PassengerSelectorP
               <div className="flex items-center justify-between">
                 <div>
                   <div className="font-medium text-sm">First Class</div>
-                  <div className="text-xs text-gray-500">Luxury seating</div>
+                  <div className="text-xs text-secondary-foreground">Luxury seating</div>
                 </div>
                 <div className="flex items-center space-x-2">
                   <Button
@@ -196,8 +191,8 @@ export function PassengerSelector({ value, onChange, error }: PassengerSelectorP
 
               <div className="border-t pt-3 mt-3">
                 <div className="flex justify-between text-xs">
-                  <span className="text-gray-600">Total passengers:</span>
-                  <span className={`font-medium ${tempTotal > 9 ? 'text-red-500' : tempTotal === 0 ? 'text-red-500' : 'text-gray-900'}`}>
+                  <span className="text-secondary-foreground">Total passengers:</span>
+                  <span className={`font-medium ${tempTotal > 9 ? 'text-red-500' : tempTotal === 0 ? 'text-red-500' : 'text-secondary-foreground'}`}>
                     {tempTotal}
                   </span>
                 </div>
@@ -212,10 +207,6 @@ export function PassengerSelector({ value, onChange, error }: PassengerSelectorP
           </div>
         )}
       </div>
-      
-      {error && (
-        <p className="text-sm text-red-500">{error}</p>
-      )}
-    </div>
+    </>
   )
 } 

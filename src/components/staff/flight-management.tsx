@@ -409,7 +409,7 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Origin Airport */}
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700 flex items-center">
+                      <label className="text-sm font-medium text-secondary-foreground flex items-center">
                         <MapPin className="h-4 w-4 mr-1" />
                         Origin Airport
                       </label>
@@ -602,7 +602,7 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
 
           {/* Flight Tabs */}
           <div className="mb-4">
-            <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
+            <div className="flex space-x-1 bg-secondary rounded-lg p-1">
               <Button
                 variant={activeTab === 'current' ? 'default' : 'ghost'}
                 onClick={() => setActiveTab('current')}
@@ -635,16 +635,16 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
                   const isPastFlight = isFlightInPast(flight.departureTime)
 
                   return (
-                    <div key={flight.id} className="border rounded-lg overflow-hidden">
+                    <div key={flight.id} className="border-app rounded-lg overflow-hidden">
                       <div
-                        className={`p-4 hover:bg-gray-50 cursor-pointer ${isPastFlight ? 'bg-gray-50 opacity-75' : 'bg-white'}`}
+                        className={`p-4 hover:bg-secondary cursor-pointer ${isPastFlight ? 'bg-secondary opacity-75' : 'bg-secondary'}`}
                         onClick={() => toggleFlightExpansion(flight.id)}
                       >
                         <div className="flex items-center gap-1">
                           <Badge variant="outline" className="font-mono h-10">
                             {flight.airline.code}-{flight.id.toString().padStart(4, '0')}
                           </Badge>
-                          <div className="w-px h-6 bg-gray-300 mx-2" />
+                          <div className="w-px h-6 bg-secondary-foreground mx-2" />
 
                           <div className="flex items-center justify-between w-full">
                             <div className="flex items-center gap-4 flex-1">
@@ -653,18 +653,18 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
                                   <Badge variant="secondary" className="font-mono">
                                     {flight.originAirport.code}
                                   </Badge>
-                                  <span className="text-xs text-gray-500">{flight.originAirport.city}</span>
+                                  <span className="text-xs text-secondary-foreground">{flight.originAirport.city}</span>
                                 </div>
                                 <span>→</span>
                                 <div className="flex flex-col items-center">
                                   <Badge variant="secondary" className="font-mono">
                                     {flight.destinationAirport.code}
                                   </Badge>
-                                  <span className="text-xs text-gray-500">{flight.destinationAirport.city}</span>
+                                  <span className="text-xs text-secondary-foreground">{flight.destinationAirport.city}</span>
                                 </div>
                               </div>
 
-                              <div className="flex items-center gap-1 text-sm text-gray-600 w-45">
+                              <div className="flex items-center gap-1 text-sm text-secondary-foreground w-45">
                                 <Clock className="h-4 w-4" />
                                 {formatDateTime(flight.departureTime)}
                               </div>
@@ -674,7 +674,7 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
                                 {formatCurrency(flight.minPrice)}
                               </div>
 
-                              <div className="text-sm text-gray-600">
+                              <div className="text-sm text-secondary-foreground">
                                 {flight.emptySeats} seats available
                               </div>
                             </div>
@@ -690,7 +690,7 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
                               {/* Management Buttons */}
                               <div className="flex items-center gap-1" onClick={(e) => e.stopPropagation()}>
                                 {isPastFlight ? (
-                                  <Badge variant="secondary" className="text-gray-500">
+                                  <Badge variant="secondary" className="text-tertiary-foreground">
                                     Completed
                                   </Badge>
                                 ) : (
@@ -748,17 +748,17 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
                       </div>
 
                       {isExpanded && (
-                        <div className="border-t bg-gray-50 p-4">
+                        <div className="border-t bg-secondary p-4">
                           <div className="flex items-center justify-between mb-4">
                             <h4 className="font-medium">Booking Details</h4>
                             <div className="flex gap-4 text-sm">
-                              <span className="text-gray-600">
+                              <span className="text-secondary-foreground">
                                 Total Bookings: <span className="font-medium">{flight.bookingCount}</span>
                               </span>
-                              <span className="text-gray-600">
+                              <span className="text-secondary-foreground">
                                 Booked Seats: <span className="font-medium">{flight.passengerCount}</span>
                               </span>
-                              <span className="text-gray-600">
+                              <span className="text-secondary-foreground">
                                 Revenue: <span className="font-medium">{formatCurrency(flight.revenue || 0)}</span>
                               </span>
                             </div>
@@ -806,7 +806,7 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
                               ))}
                             </div>
                           ) : (
-                            <div className="text-center py-4 text-gray-500">
+                            <div className="text-center py-4 text-tertiary-foreground">
                               No bookings for this flight yet
                             </div>
                           )}

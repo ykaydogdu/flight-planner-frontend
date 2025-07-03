@@ -25,7 +25,7 @@ export default function StaffDashboardPage() {
       <div className="container mx-auto px-4 py-8">
         <div className="text-center">
           <h1 className="text-2xl font-bold text-red-600">Access Denied</h1>
-          <p className="text-gray-600">You need airline staff privileges to access this page.</p>
+          <p className="text-secondary-foreground">You need airline staff privileges to access this page.</p>
         </div>
       </div>
     )
@@ -35,10 +35,10 @@ export default function StaffDashboardPage() {
     <div className="relative min-h-screen overflow-hidden">
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-4">
-          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+          <h1 className="text-4xl font-extrabold text-foreground tracking-tight">
             Staff Dashboard
           </h1>
-          <p className="text-gray-600">
+          <p className="text-secondary-foreground">
             Manage flights for {user.airline?.name} ({user.airline?.code})
           </p>
 
@@ -48,10 +48,10 @@ export default function StaffDashboardPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Active Flights</p>
+                    <p className="text-sm font-medium text-secondary-foreground">Active Flights</p>
                     <p className="text-2xl font-bold">{overallStats.activeFlights}</p>
                   </div>
-                  <Plane className="h-8 w-8 text-blue-600" />
+                  <Plane className="h-8 w-8 text-primary" />
                 </div>
               </CardContent>
             </Card>
@@ -60,7 +60,7 @@ export default function StaffDashboardPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Bookings</p>
+                    <p className="text-sm font-medium text-secondary-foreground">Total Bookings</p>
                     <p className="text-2xl font-bold">{overallStats.overallBookingCount}</p>
                   </div>
                   <TicketCheck className="h-8 w-8 text-green-600" />
@@ -72,7 +72,7 @@ export default function StaffDashboardPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Revenue</p>
+                    <p className="text-sm font-medium text-secondary-foreground">Total Revenue</p>
                     <p className="text-2xl font-bold">${overallStats.overallRevenue.toLocaleString()}</p>
                   </div>
                   <DollarSign className="h-8 w-8 text-yellow-600" />
@@ -84,7 +84,7 @@ export default function StaffDashboardPage() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-medium text-gray-600">Total Passengers</p>
+                    <p className="text-sm font-medium text-secondary-foreground">Total Passengers</p>
                     <p className="text-2xl font-bold">{overallStats.overallPassengerCount}</p>
                   </div>
                   <Users className="h-8 w-8 text-purple-600" />

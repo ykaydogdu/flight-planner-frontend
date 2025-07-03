@@ -31,10 +31,10 @@ export default function HomePage() {
       <section className="py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900">
+            <h2 className="text-3xl font-bold text-app">
               Why Choose FlightBooker?
             </h2>
-            <p className="mt-4 text-lg text-gray-600">
+            <p className="mt-4 text-lg text-secondary-foreground">
               We make booking flights simple, secure, and affordable
             </p>
           </div>
@@ -44,10 +44,10 @@ export default function HomePage() {
               <div className="mx-auto h-16 w-16 rounded-full bg-blue-100 flex items-center justify-center">
                 <Plane className="h-8 w-8 text-blue-600" />
               </div>
-              <h3 className="mt-4 text-lg font-semibold text-gray-900">
+              <h3 className="mt-4 text-lg font-semibold text-app">
                 Wide Selection
               </h3>
-              <p className="mt-2 text-gray-600">
+              <p className="mt-2 text-secondary-foreground">
                 Access to flights from major airlines worldwide
               </p>
             </div>
@@ -56,10 +56,10 @@ export default function HomePage() {
               <div className="mx-auto h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
                 <Clock className="h-8 w-8 text-green-600" />
               </div>
-              <h3 className="mt-4 text-lg font-semibold text-gray-900">
+              <h3 className="mt-4 text-lg font-semibold text-app">
                 Real-time Updates
               </h3>
-              <p className="mt-2 text-gray-600">
+              <p className="mt-2 text-secondary-foreground">
                 Live flight information and instant booking confirmation
               </p>
             </div>
@@ -68,10 +68,10 @@ export default function HomePage() {
               <div className="mx-auto h-16 w-16 rounded-full bg-purple-100 flex items-center justify-center">
                 <Shield className="h-8 w-8 text-purple-600" />
               </div>
-              <h3 className="mt-4 text-lg font-semibold text-gray-900">
+              <h3 className="mt-4 text-lg font-semibold text-app">
                 Secure Booking
               </h3>
-              <p className="mt-2 text-gray-600">
+              <p className="mt-2 text-secondary-foreground">
                 Your personal and payment information is always protected
               </p>
             </div>
@@ -80,10 +80,10 @@ export default function HomePage() {
               <div className="mx-auto h-16 w-16 rounded-full bg-yellow-100 flex items-center justify-center">
                 <Star className="h-8 w-8 text-yellow-600" />
               </div>
-              <h3 className="mt-4 text-lg font-semibold text-gray-900">
+              <h3 className="mt-4 text-lg font-semibold text-app">
                 Best Prices
               </h3>
-              <p className="mt-2 text-gray-600">
+              <p className="mt-2 text-secondary-foreground">
                 Compare prices across airlines to find the best deals
               </p>
             </div>
@@ -95,10 +95,10 @@ export default function HomePage() {
       <section className="py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900">
+            <h2 className="text-3xl font-bold text-app">
               Popular Destinations
             </h2>
-            <p className="mt-4 text-lg text-gray-600">
+            <p className="mt-4 text-lg text-secondary-foreground">
               Discover amazing places around the world
             </p>
           </div>
@@ -114,13 +114,13 @@ export default function HomePage() {
             ].map((destination, index) => (
               <div 
                 key={index}
-                className="relative overflow-hidden rounded-lg bg-white p-6 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+                className="relative overflow-hidden rounded-lg bg-card p-6 shadow-md hover:shadow-lg transition-shadow cursor-pointer"
               >
                 <div className="text-4xl mb-3">{destination.image}</div>
-                <h3 className="text-xl font-semibold text-gray-900">
+                <h3 className="text-xl font-semibold text-app">
                   {destination.city}
                 </h3>
-                <p className="text-gray-600">{destination.country}</p>
+                <p className="text-secondary-foreground">{destination.country}</p>
               </div>
             ))}
           </div>

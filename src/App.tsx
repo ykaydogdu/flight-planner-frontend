@@ -10,17 +10,22 @@ import MyBookingsPage from '@/app/my-bookings/page'
 import AdminDashboardPage from './app/admin-dashboard/page'
 import StaffDashboardPage from './app/staff-dashboard/page'
 import BookingPage from './app/booking/page'
-import backgroundImage from '@/assets/background.jpeg'
+import backgroundImage from '/images/background.jpeg'
+import darkBackgroundImage from '/images/dark-background.jpeg'
+
+import { useTheme } from '@/context/ThemeContext'
 
 function App() {
+  const { theme } = useTheme();
+
   return (
     <div className="min-h-screen">
       <Header />
       <div>
         {/* Blurred Background */}
         <div className="fixed inset-0 -z-10">
-          <div className="absolute inset-0 bg-cover bg-center blur-sm" style={{ backgroundImage: `url(${backgroundImage})` }} />
-          <div className="absolute inset-0 bg-white/40 backdrop-blur-sm" />
+          <div className="absolute inset-0 bg-cover bg-center blur-sm" style={{ backgroundImage: `url(${theme === 'dark' ? darkBackgroundImage : backgroundImage})` }} />
+          <div className="absolute inset-0 bg-white/40 dark:bg-gray-600/20 backdrop-blur-sm" />
         </div>
         <div className="relative z-10">
           <Routes>

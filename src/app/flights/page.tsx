@@ -110,10 +110,10 @@ export default function FlightsPage() {
         <div className="mb-6">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
             <div>
-              <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">
+              <h1 className="text-4xl font-extrabold text-foreground tracking-tight">
                 Search Results
               </h1>
-              <h1 className="text-2xl font-bold text-gray-900">{formatSearchSummary()}</h1>
+              <h1 className="text-2xl font-bold text-foreground">{formatSearchSummary()}</h1>
             </div>
             <div className="flex items-center space-x-2 mt-4 sm:mt-0">
               <Button
@@ -155,11 +155,11 @@ export default function FlightsPage() {
             transition={{ duration: 0.5 }}
           >
             <div className="mb-8">
-              <Card className="shadow-lg border-blue-200">
+              <Card className="shadow-lg border-app">
                 <CardContent>
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold text-gray-900 flex items-center">
-                      <Search className="h-5 w-5 mr-2 text-blue-600" />
+                    <h2 className="text-xl font-semibold text-foreground flex items-center">
+                      <Search className="h-5 w-5 mr-2 text-primary" />
                       {searchParams ? 'Modify Your Search' : 'Search Flights'}
                     </h2>
                   </div>
@@ -178,12 +178,12 @@ export default function FlightsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3 }}
           >
-            <div className="flex items-center justify-between bg-white rounded-lg p-4 shadow-sm mb-6">
-              <p className="text-sm text-gray-600">
+            <div className="flex items-center justify-between bg-card rounded-lg p-4 shadow-sm mb-6">
+              <p className="text-sm text-secondary-foreground">
                 {filteredFlights.length} of {flights.length} flights found
               </p>
               <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-600">Sort by:</span>
+                <span className="text-sm text-secondary-foreground">Sort by:</span>
                 {(['price', 'departure', 'duration'] as const).map((type) => (
                   <Button
                     key={type}
@@ -211,8 +211,8 @@ export default function FlightsPage() {
               <Card className="text-center py-12">
                 <CardContent>
                   <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No flights found</h3>
-                  <p className="text-gray-600 mb-4">
+                  <h3 className="text-lg font-medium text-foreground mb-2">No flights found</h3>
+                  <p className="text-secondary-foreground mb-4">
                     We couldn&apos;t find any flights matching your search criteria.
                   </p>
                   <Button onClick={() => navigate('/')}>
@@ -227,8 +227,8 @@ export default function FlightsPage() {
               <Card className="text-center py-12">
                 <CardContent>
                   <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">No flights match your filters</h3>
-                  <p className="text-gray-600 mb-4">Try adjusting your filter criteria to see more results.</p>
+                  <h3 className="text-lg font-medium text-foreground mb-2">No flights match your filters</h3>
+                  <p className="text-secondary-foreground mb-4">Try adjusting your filter criteria to see more results.</p>
                   <Button variant="outline" onClick={() => setShowFilters(true)}>
                     <SlidersHorizontal className="h-4 w-4 mr-2" />
                     Adjust Filters

@@ -90,102 +90,102 @@ export function RegisterForm() {
     <Card className="w-full max-w-md mx-auto">
       <CardHeader className="space-y-1">
         <CardTitle className="text-2xl text-center">Create an account</CardTitle>
-        <p className="text-sm text-gray-600 text-center">
+        <p className="text-sm text-secondary-foreground text-center">
           Enter your details to get started
         </p>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           {error && (
-            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-md text-sm">
+            <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-md text-sm">
               {error}
             </div>
           )}
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-secondary-foreground">
               Username
             </label>
             <Input
               {...register('username')}
               placeholder="Choose a username"
-              className={errors.username ? 'border-red-500' : ''}
+              className={errors.username ? 'border-destructive' : ''}
             />
             {errors.username && (
-              <p className="text-sm text-red-500">{errors.username.message}</p>
+              <p className="text-sm text-destructive">{errors.username.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-secondary-foreground">
               First Name
             </label>
             <Input
               {...register('firstName')}
               placeholder="Enter your first name"
-              className={errors.firstName ? 'border-red-500' : ''}
+              className={errors.firstName ? 'border-destructive' : ''}
             />
             {errors.firstName && (
-              <p className="text-sm text-red-500">{errors.firstName.message}</p>
+              <p className="text-sm text-destructive">{errors.firstName.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-secondary-foreground">
               Last Name
             </label>
             <Input
               {...register('lastName')}
               placeholder="Enter your last name"
-              className={errors.lastName ? 'border-red-500' : ''}
+              className={errors.lastName ? 'border-destructive' : ''}
             />
             {errors.lastName && (
-              <p className="text-sm text-red-500">{errors.lastName.message}</p>
+              <p className="text-sm text-destructive">{errors.lastName.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-secondary-foreground">
               Email
             </label>
             <Input
               type="email"
               {...register('email')}
               placeholder="Enter your email"
-              className={errors.email ? 'border-red-500' : ''}
+              className={errors.email ? 'border-destructive' : ''}
             />
             {errors.email && (
-              <p className="text-sm text-red-500">{errors.email.message}</p>
+              <p className="text-sm text-destructive">{errors.email.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-secondary-foreground">
               Password
             </label>
             <Input
               type="password"
               {...register('password')}
               placeholder="Create a password"
-              className={errors.password ? 'border-red-500' : ''}
+              className={errors.password ? 'border-destructive' : ''}
             />
             {errors.password && (
-              <p className="text-sm text-red-500">{errors.password.message}</p>
+              <p className="text-sm text-destructive">{errors.password.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">
+            <label className="text-sm font-medium text-secondary-foreground">
               Confirm Password
             </label>
             <Input
               type="password"
               {...register('confirmPassword')}
               placeholder="Confirm your password"
-              className={errors.confirmPassword ? 'border-red-500' : ''}
+              className={errors.confirmPassword ? 'border-destructive' : ''}
             />
             {errors.confirmPassword && (
-              <p className="text-sm text-red-500">{errors.confirmPassword.message}</p>
+              <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
             )}
           </div>
 
@@ -207,9 +207,9 @@ export function RegisterForm() {
             )}
           </Button>
 
-          <div className="text-center text-sm text-gray-600">
+          <div className="text-center text-sm text-secondary-foreground">
             Already have an account?{' '}
-            <Link to="/login" className="text-blue-600 hover:underline">
+            <Link to="/login" className="text-primary hover:underline">
               Sign in
             </Link>
           </div>

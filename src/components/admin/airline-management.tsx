@@ -65,7 +65,7 @@ export function AirlineManagement() {
       </CardHeader>
       <CardContent>
         {/* Create New Airline Form */}
-        <div className="mb-6 p-4 border rounded-lg bg-gray-50">
+        <div className="mb-6 p-4 border-app rounded-lg bg-secondary">
           <h3 className="font-semibold mb-3">Create New Airline</h3>
           <form onSubmit={handleCreateAirline} className="flex gap-3">
             <Input
@@ -96,11 +96,11 @@ export function AirlineManagement() {
           {loading ? (
             <div className="text-center py-8">Loading airlines...</div>
           ) : airlines.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">No airlines found</div>
+            <div className="text-center py-8 text-secondary-foreground">No airlines found</div>
           ) : (
             <div className="grid gap-3">
               {airlines.map((airline) => (
-                <div key={airline.code} className="flex items-center justify-between p-3 border rounded-lg">
+                <div key={airline.code} className="flex items-center justify-between p-3 border-app rounded-lg bg-secondary">
                   <div className="flex items-center gap-3">
                     <div className="w-10 flex items-center justify-center">
                       <Badge variant="secondary" className="font-mono">
@@ -109,7 +109,7 @@ export function AirlineManagement() {
                     </div>
                     <div>
                       <div className="font-medium">{airline.name}</div>
-                      <div className="text-sm text-gray-600">
+                      <div className="text-sm text-secondary-foreground">
                         {airline.staffCount} staff
                       </div>
                     </div>
