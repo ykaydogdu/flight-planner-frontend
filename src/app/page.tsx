@@ -23,7 +23,7 @@ export default function HomePage() {
       {/* Search Form Section */}
       <section className="relative -mt-12 pb-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <FlightSearchForm />
+          <FlightSearchForm/>
         </div>
       </section>
 

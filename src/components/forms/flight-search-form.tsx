@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { PassengerSelector } from './passenger-selector'
 import { useFlightStore } from '@/store/flights'
 import type { FlightSearchParams, Airport, Airline } from '@/types'
-import { Search, MapPin, Calendar, Plane, Users } from 'lucide-react'
+import { Search, MapPin, Calendar, Plane, Users, ArrowLeftRight, ChevronDown } from 'lucide-react'
 
 const flightSearchSchema = (airports: Airport[], airlines: Airline[], anyDate: boolean) => z.object({
   origin: z.string()
@@ -101,12 +101,13 @@ const getNearestAirportHaversine = async (
   return nearestAirport;
 };
 
-export function FlightSearchForm() {
+export function FlightSearchForm({ variant = 'default' }: { variant?: 'default' | 'search-results' }) {
   const navigate = useNavigate()
   const { searchFlights, fetchAirports, fetchAirlines, airports, airlines, loading } = useFlightStore()
   const [anyDate, setAnyDate] = useState<boolean>(false);
   const [loadingAirport, setLoadingAirport] = useState<boolean>(false);
-
+  const [showPassengers, setShowPassengers] = useState<boolean>(false);
+  const passengerTriggerRef = useRef<HTMLDivElement>(null);
   const {
     register,
     handleSubmit,
@@ -125,6 +126,7 @@ export function FlightSearchForm() {
   })
 
   const passengers = watch('passengers')
+  const totalPassengers = passengers.economy + passengers.business + passengers.firstClass
 
   useEffect(() => {
     fetchAirports()
@@ -173,13 +175,20 @@ export function FlightSearchForm() {
     }
   }
 
-  return (
+  const handleSwapLocations = () => {
+    const origin = watch('origin')
+    const destination = watch('destination')
+    setValue('origin', destination)
+    setValue('destination', origin)
+  }
+
+  return (variant === 'default' ? (
     <Card className="w-full max-w-4xl mx-auto">
       <CardContent className="p-6">
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="flex flex-col md:flex-row items-start gap-4">
             {/* Origin */}
-            <div className="space-y-2">
+            <div className="flex-1 space-y-2">
               <div className="flex items-center">
                 <label className="text-sm font-medium text-secondary-foreground flex items-center">
                   <MapPin className="h-4 w-4 mr-1" />
@@ -202,10 +211,7 @@ export function FlightSearchForm() {
               />
               <datalist id="airports-from">
                 {airports.map((airport) => (
-                  <option
-                    key={airport.code}
-                    value={airport.name}
-                  >
+                  <option key={airport.code} value={airport.name}>
                     {airport.name} ({airport.code}) - {airport.city}/{airport.country}
                   </option>
                 ))}
@@ -215,8 +221,19 @@ export function FlightSearchForm() {
               )}
             </div>
 
+            {/* Swap Button */}
+            <div className="flex-shrink-0 flex items-center justify-center mt-1 md:mt-6 -ml-6 -mr-6 z-10">
+              <button
+                type="button"
+                onClick={handleSwapLocations}
+                className="p-3 rounded-full border border-gray-300 bg-app hover:bg-gray-400 transition-colors shadow-md"
+              >
+                <ArrowLeftRight className="w-5 h-5 text-secondary-foreground" />
+              </button>
+            </div>
+
             {/* Destination */}
-            <div className="space-y-2">
+            <div className="flex-1 space-y-2">
               <div className="flex items-center">
                 <label className="text-sm font-medium text-secondary-foreground flex items-center">
                   <MapPin className="h-4 w-4 mr-1" />
@@ -239,10 +256,7 @@ export function FlightSearchForm() {
               />
               <datalist id="airports-to">
                 {airports.map((airport) => (
-                  <option
-                    key={airport.code}
-                    value={airport.name}
-                  >
+                  <option key={airport.code} value={airport.name}>
                     {airport.name} ({airport.code}) - {airport.city}/{airport.country}
                   </option>
                 ))}
@@ -288,11 +302,31 @@ export function FlightSearchForm() {
                 <Users className="h-4 w-4 mr-1" />
                 Passengers
               </label>
-              <PassengerSelector
-                value={passengers}
-                onChange={(selection) => setValue('passengers', selection)}
-                error={errors.passengers?.message}
-              />
+              <div className="relative" ref={passengerTriggerRef}>
+                <div
+                  className={`flex items-center justify-between cursor-pointer ${errors.passengers ? 'border-red-500' : ''}`}
+                  onClick={() => setShowPassengers(!showPassengers)}
+                >
+                  <Input
+                    value={`${totalPassengers} passenger${totalPassengers !== 1 ? 's' : ''}`}
+                    readOnly
+                    className={`cursor-pointer pr-10 ${errors.passengers ? 'border-red-500' : ''}`}
+                  />
+                  <ChevronDown 
+                    className={`absolute right-3 h-4 w-4 text-gray-400 transition-transform duration-200 ${
+                      showPassengers ? 'rotate-180' : ''
+                    }`} 
+                  />
+                </div>
+                <PassengerSelector
+                  value={passengers}
+                  onChange={(selection) => setValue('passengers', selection)}
+                  error={errors.passengers?.message}
+                  isOpen={showPassengers}
+                  onClose={() => setShowPassengers(false)}
+                  containerRef={passengerTriggerRef}
+                />
+              </div>
             </div>
 
             {/* Airline */}
@@ -334,5 +368,170 @@ export function FlightSearchForm() {
         </form>
       </CardContent>
     </Card>
-  )
+  ) : (
+    <Card className="w-full bg-slate-800 mb-4 p-0">
+      <CardContent className="p-6">
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {/* Search Form Row */}
+          <div className="flex items-center gap-0.5">
+            {/* Departure Location */}
+            <div className="flex-1 bg-white rounded-l-xl border-r border-gray-200">
+              <div className="p-4">
+                <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  From
+                </label>
+                <div className="relative">
+                  <input
+                    {...register('origin')}
+                    type="text"
+                    className={`w-full border-none bg-transparent text-gray-900 font-medium placeholder-gray-500 focus:outline-none focus:ring-0 p-0 ${errors.origin ? 'text-red-500' : ''}`}
+                    placeholder="Origin Airport"
+                    list="airports-from-compact"
+                  />
+                  <MapPin className="absolute right-0 top-0 w-4 h-4 text-gray-400 mr-4" />
+                </div>
+                {errors.origin && (
+                  <p className="text-xs text-red-500 mt-1">{errors.origin.message}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Swap Button */}
+            <div className="relative z-10 -mx-6">
+              <button
+                type="button"
+                onClick={handleSwapLocations}
+                className="p-3 rounded-full border-2 border-secondary-foreground bg-app hover:bg-gray-400 transition-colors shadow-md"
+              >
+                <ArrowLeftRight className="w-5 h-5 text-secondary-foreground" />
+              </button>
+            </div>
+
+            {/* Arrival Location */}
+            <div className="flex-1 bg-white border-r border-gray-200">
+              <div className="p-4 ml-4">
+                <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  To
+                </label>
+                <div className="relative">
+                  <input
+                    {...register('destination')}
+                    type="text"
+                    className={`w-full border-none bg-transparent text-gray-900 font-medium placeholder-gray-500 focus:outline-none focus:ring-0 p-0 ${errors.destination ? 'text-red-500' : ''}`}
+                    placeholder="Destination Airport"
+                    list="airports-to-compact"
+                  />
+                  <MapPin className="absolute right-0 top-0 w-4 h-4 text-gray-400" />
+                </div>
+                {errors.destination && (
+                  <p className="text-xs text-red-500 mt-1">{errors.destination.message}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Departure Date */}
+            <div className="flex-1 bg-white border-r border-gray-200">
+              <div className="p-4">
+                <label className="text-sm font-medium text-gray-700 mb-1">
+                  Depart •
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setAnyDate(!anyDate)}
+                  className="text-sm text-blue-600 hover:text-blue-700 underline ml-1"
+                >
+                  {anyDate ? 'Select Date' : 'Any'}
+                </button>
+                <div className="relative">
+                  <input
+                    {...register('departureDate')}
+                    type="date"
+                    min={new Date().toISOString().split("T")[0]}
+                    disabled={anyDate}
+                    className={`w-full border-none bg-transparent text-gray-900 font-medium placeholder-gray-500 focus:outline-none focus:ring-0 p-0 ${errors.departureDate ? 'text-red-500' : ''}`}
+                    placeholder="Departure Date"
+                  />
+                </div>
+                {errors.departureDate && (
+                  <p className="text-xs text-red-500 mt-1">{errors.departureDate.message}</p>
+                )}
+              </div>
+            </div>
+
+            {/* Passengers */}
+            <div className="flex-1 bg-white relative">
+              <div className="p-4" ref={passengerTriggerRef}>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  Passengers
+                </label>
+                <div className="relative">
+                  <button
+                    type="button"
+                    className="w-full text-left border-none bg-transparent text-gray-900 font-medium focus:outline-none focus:ring-0 p-0"
+                    onClick={() => setShowPassengers(!showPassengers)}
+                  >
+                    {totalPassengers} passengers
+                  </button>
+                  <Users className="absolute right-0 top-0 w-4 h-4 text-gray-400" />
+                </div>
+                {errors.passengers && (
+                  <p className="text-xs text-red-500 mt-1">{errors.passengers.message}</p>
+                )}
+              </div>
+              <PassengerSelector
+                value={passengers}
+                onChange={(selection) => setValue('passengers', selection)}
+                error={errors.passengers?.message}
+                isOpen={showPassengers}
+                onClose={() => setShowPassengers(false)}
+                containerRef={passengerTriggerRef}
+              />
+            </div>
+
+            {/* Airline */}
+            <div className="flex-1 bg-white rounded-r-xl relative">
+              <div className="p-4" ref={passengerTriggerRef}>
+                <label className="text-sm font-medium text-gray-700 mb-1 block">
+                  Airline
+                </label>
+                <input
+                  {...register('airline')}
+                  placeholder="Any"
+                  className={`w-full border-none bg-transparent text-gray-900 font-medium placeholder-gray-500 focus:outline-none focus:ring-0 p-0 ${errors.airline ? 'text-red-500' : ''}`}
+                  list="airline"
+                />
+              </div>
+            </div>
+
+            {/* Search Button */}
+            <div className="ml-4">
+              <button 
+                type="submit"
+                disabled={loading}
+                className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white px-8 py-6 rounded-xl font-medium transition-colors text-lg"
+              >
+                {loading ? 'Searching...' : 'Search'}
+              </button>
+            </div>
+          </div>
+        </form>
+
+        {/* Datalists for airport suggestions */}
+        <datalist id="airports-from-compact">
+          {airports.map((airport) => (
+            <option key={airport.code} value={airport.name}>
+              {airport.name} ({airport.code}) - {airport.city}/{airport.country}
+            </option>
+          ))}
+        </datalist>
+        <datalist id="airports-to-compact">
+          {airports.map((airport) => (
+            <option key={airport.code} value={airport.name}>
+              {airport.name} ({airport.code}) - {airport.city}/{airport.country}
+            </option>
+          ))}
+        </datalist>
+      </CardContent>
+    </Card>
+  ))
 } 

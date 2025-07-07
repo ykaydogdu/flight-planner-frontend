@@ -50,6 +50,7 @@ interface FlightState {
   loading: boolean
   searchParams: Partial<FlightSearchParams> | null
   hasActiveSearch: boolean
+  lastSearchTime: number | null
   searchFlights: (params: Partial<FlightSearchParams>) => Promise<void>
   fetchFlightById: (flightId: number) => Promise<Flight>
   fetchFlightStats: (airlineCode: string) => Promise<StatsResponse>
@@ -70,9 +71,10 @@ export const useFlightStore = create<FlightState>((set) => ({
   loading: false,
   searchParams: null,
   hasActiveSearch: false,
+  lastSearchTime: null,
 
   searchFlights: async (params: Partial<FlightSearchParams>) => {
-    set({ loading: true, searchParams: params, hasActiveSearch: true })
+    set({ loading: true, searchParams: params, hasActiveSearch: true, lastSearchTime: Date.now() })
     try {
       const response = await apiClient.get<Flight[]>('/flights', {
         params: params,
@@ -156,10 +158,10 @@ export const useFlightStore = create<FlightState>((set) => ({
   },
 
   clearFlights: () => {
-    set({ flights: [], searchParams: null, hasActiveSearch: false })
+    set({ flights: [], searchParams: null, hasActiveSearch: false, lastSearchTime: null })
   },
 
   clearSearchState: () => {
-    set({ flights: [], searchParams: null, hasActiveSearch: false })
+    set({ flights: [], searchParams: null, hasActiveSearch: false, lastSearchTime: null })
   },
-})) 
+}))

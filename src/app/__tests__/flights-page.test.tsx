@@ -79,10 +79,17 @@ const searchParams : FlightSearchParams = {
     passengerEconomy: 1,
 }
 
+type MockFlightStore = {
+    getState: () => {
+        lastSearchTime: number;
+        clearSearchState: () => void;
+    };
+};
+
 const mockUseFlightStore = (
     { flights = [], loading = false, sParams = searchParams, airports = [], airlines = [], hasActiveSearch = false }: { flights: Flight[], loading: boolean, sParams: FlightSearchParams | undefined, airports: Airport[], airlines: Airline[], hasActiveSearch?: boolean }
 ) => {
-    (useFlightStore as unknown as Mock).mockReturnValue({
+    const mockStore = {
         flights,
         loading,
         searchParams: sParams,
@@ -93,7 +100,11 @@ const mockUseFlightStore = (
         fetchAirlines: vi.fn(),
         searchFlights: vi.fn(),
         clearSearchState: vi.fn(),
-    })
+        lastSearchTime: Date.now(),
+    };
+    
+    (useFlightStore as unknown as Mock).mockReturnValue(mockStore);
+    (useFlightStore as unknown as MockFlightStore).getState = vi.fn().mockReturnValue(mockStore);
 }
 
 describe('FlightsPage', () => {
@@ -106,7 +117,7 @@ describe('FlightsPage', () => {
     }
 
     it('should render loading state', () => {
-        mockUseFlightStore({ flights: [], loading: true, sParams: undefined, airports: [], airlines: [], hasActiveSearch: false })
+        mockUseFlightStore({ flights: [] as Flight[], loading: true, sParams: undefined, airports: [], airlines: [], hasActiveSearch: false })
         renderWithRouter(<FlightsPage />)
         expect(screen.getByText('Flight Search')).toBeInTheDocument()
         expect(screen.queryAllByTestId('flight-card').length).toBe(0)
@@ -130,22 +141,22 @@ describe('FlightsPage', () => {
     it('should show search form by default when there are no search params', () => {
         mockUseFlightStore({ flights: [], loading: false, sParams: undefined, airports: mockAirports as Airport[], airlines: [], hasActiveSearch: false })
         renderWithRouter(<FlightsPage />)
-        expect(screen.getByText('Search Flights')).toBeInTheDocument()
+        expect(screen.getByText('Flight Search')).toBeInTheDocument()
     })
 
     it('should show and hide search form on button click', async () => {
         mockUseFlightStore({ flights: mockFlights as Flight[], loading: false, sParams: searchParams, airports: mockAirports as Airport[], airlines: [], hasActiveSearch: true })
         renderWithRouter(<FlightsPage />)
         const modifySearchButton = screen.getByRole('button', { name: /Modify Search/i })
-        expect(screen.queryByText('Modify Your Search')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('flight-search-form')).not.toBeInTheDocument()
         await userEvent.click(modifySearchButton)
-        expect(screen.getByText('Modify Your Search')).toBeInTheDocument()
+        expect(screen.getByTestId('flight-search-form')).toBeInTheDocument()
         await userEvent.click(modifySearchButton)
-        expect(screen.queryByText('Modify Your Search')).not.toBeInTheDocument()
+        expect(screen.queryByTestId('flight-search-form')).not.toBeInTheDocument()
     })
 
     it('should sort flights by price by default and allow toggling order', async () => {
-        mockUseFlightStore({ flights: mockFlights as Flight[], loading: false, sParams: undefined, airports: [], airlines: [], hasActiveSearch: true })
+        mockUseFlightStore({ flights: mockFlights as Flight[], loading: false, sParams: searchParams, airports: [], airlines: [], hasActiveSearch: true })
         renderWithRouter(<FlightsPage />)
         const flightCards = screen.getAllByTestId('flight-card')
         // Default sort: price ascending (American Airlines 450 < British Airways 500 < Virgin Atlantic 550)
@@ -216,8 +227,10 @@ describe('FlightsPage', () => {
             fetchAirlines: vi.fn(),
             searchFlights: vi.fn(),
             clearSearchState: vi.fn(),
+            lastSearchTime: Date.now(),
         };
-        (useFlightStore as unknown as Mock).mockReturnValue(mockFlightStore)
+        (useFlightStore as unknown as Mock).mockReturnValue(mockFlightStore);
+        (useFlightStore as unknown as MockFlightStore).getState = vi.fn().mockReturnValue(mockFlightStore)
 
         renderWithRouter(<FlightsPage />)
         const filtersButton = screen.getByRole('button', { name: /Filters/i })

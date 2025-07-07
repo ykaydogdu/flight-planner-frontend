@@ -19,13 +19,22 @@ export default function FlightsPage() {
   const [sortBy, setSortBy] = useState<'price' | 'departure' | 'duration'>('price')
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc')
 
-  // Clear search state if there's no active search when component mounts
+  // On component mount, verify if the last search is older than 2 minutes.
+  // If so, reset the search state so that the user starts with a clean slate.
   useEffect(() => {
-    if (!hasActiveSearch && (searchParams || flights.length > 0)) {
+    const { lastSearchTime } = useFlightStore.getState()
+    const TWO_MINUTES = 2 * 60 * 1000
+
+    if (lastSearchTime && Date.now() - lastSearchTime > TWO_MINUTES) {
       clearSearchState()
       setShowSearchForm(true)
     }
-  }, [hasActiveSearch, searchParams, flights.length, clearSearchState]) // Dependencies needed for exhaustive-deps
+    // If there is no active search at all we still want to show the search form
+    if (!hasActiveSearch) {
+      setShowSearchForm(true)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []) // run once on mount only
 
   useEffect(() => {
     const sorted = [...flights]
@@ -51,21 +60,6 @@ export default function FlightsPage() {
 
     setFilteredFlights(sorted)
   }, [flights, searchParams, loading, navigate, sortBy, sortOrder])
-
-  // Mark search as consumed after results are displayed and user has had time to see them
-  useEffect(() => {
-    if (hasActiveSearch && flights.length > 0 && !loading) {
-      const timeoutId = setTimeout(() => {
-        // Mark search as consumed so user needs fresh search on next visit
-        const currentState = useFlightStore.getState()
-        if (currentState.hasActiveSearch) {
-          useFlightStore.setState({ hasActiveSearch: false })
-        }
-      }, 1000) // Give user 1 second to see the results
-
-      return () => clearTimeout(timeoutId)
-    }
-  }, [hasActiveSearch, flights.length, loading])
 
   const handleFilterChange = (filtered: Flight[]) => {
     setFilteredFlights(filtered)
@@ -147,7 +141,7 @@ export default function FlightsPage() {
             <div>
               <h1 className="text-4xl font-extrabold text-foreground tracking-tight">
                 {hasActiveSearch ? 'Search Results' : 'Flight Search'}
-              </h1>
+                </h1>
               <h1 className="text-2xl font-bold text-foreground">{formatSearchSummary()}</h1>
             </div>
             <div className="flex items-center space-x-2 mt-4 sm:mt-0">
@@ -189,19 +183,7 @@ export default function FlightsPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <div className="mb-8">
-              <Card className="shadow-lg border-app">
-                <CardContent>
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-xl font-semibold text-foreground flex items-center">
-                      <Search className="h-5 w-5 mr-2 text-primary" />
-                      {hasActiveSearch ? 'Modify Your Search' : 'Search Flights'}
-                    </h2>
-                  </div>
-                  <FlightSearchForm />
-                </CardContent>
-              </Card>
-            </div>
+            <FlightSearchForm variant="search-results" />
           </motion.div>
         )}
 
