@@ -171,7 +171,7 @@ export function AirportManagement() {
                     {showAllAirports ? "Show Less" : "Show All"}
                   </Button>
                   {airports.slice(0, showAllAirports ? airports.length : 3).map((airport) => (
-                    <div key={airport.code} className="flex items-center justify-between p-3 border-app rounded-lg bg-secondary" data-testid="airport-card">
+                    <div key={airport.code} className="flex items-center justify-between p-3 border-secondary rounded-lg bg-app" data-testid="airport-card">
                       <div className="flex items-center gap-3">
                         <div className="w-10 flex items-center justify-center">
                           <Badge variant="secondary" className="font-mono">

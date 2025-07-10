@@ -65,7 +65,7 @@ describe('LoginForm', () => {
   })
 
   it('shows error message when login fails', async () => {
-    loginMock.mockRejectedValueOnce(new Error('Invalid credentials'))
+    loginMock.mockRejectedValueOnce(new Error('Login failed. Please check your credentials.'))
 
     render(
       <MemoryRouter>
@@ -77,7 +77,7 @@ describe('LoginForm', () => {
     await userEvent.type(screen.getByPlaceholderText(/password/i), 'secret')
     await userEvent.click(screen.getByRole('button', { name: /sign in/i }))
 
-    expect(await screen.findByText(/invalid credentials/i)).toBeInTheDocument()
+    expect(await screen.findByText(/login failed/i)).toBeInTheDocument()
     expect(loginMock).toHaveBeenCalledWith({ username: 'john', password: 'secret' })
   })
 

@@ -112,7 +112,7 @@ export function UserManagement() {
             const warning = getValidationWarning(user)
 
             return (
-              <div key={user.username} className="flex items-center justify-between p-4 border-app rounded-lg bg-secondary">
+              <div key={user.username} className="flex items-center justify-between p-4 border-secondary rounded-lg bg-app">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
                     <h3 className="font-semibold">{user.username}</h3>

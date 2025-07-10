@@ -100,7 +100,7 @@ export function AirlineManagement() {
           ) : (
             <div className="grid gap-3">
               {airlines.map((airline) => (
-                <div key={airline.code} className="flex items-center justify-between p-3 border-app rounded-lg bg-secondary">
+                <div key={airline.code} className="flex items-center justify-between p-3 border-secondary rounded-lg bg-app">
                   <div className="flex items-center gap-3">
                     <div className="w-10 flex items-center justify-center">
                       <Badge variant="secondary" className="font-mono">
