@@ -45,6 +45,7 @@ export interface FlightRequestData extends FlightFormData {
 
 interface FlightState {
   flights: Flight[]
+  staffFlights: Flight[]
   airports: Airport[]
   airlines: Airline[]
   loading: boolean
@@ -52,6 +53,7 @@ interface FlightState {
   hasActiveSearch: boolean
   lastSearchTime: number | null
   searchFlights: (params: Partial<FlightSearchParams>) => Promise<void>
+  fetchFlightsForStaff: (airlineCode: string) => Promise<void>
   fetchFlightById: (flightId: number) => Promise<Flight>
   fetchFlightStats: (airlineCode: string) => Promise<StatsResponse>
   createFlight: (flightData: FlightRequestData) => Promise<void>
@@ -66,6 +68,7 @@ interface FlightState {
 
 export const useFlightStore = create<FlightState>((set) => ({
   flights: [],
+  staffFlights: [],
   airports: [],
   airlines: [],
   loading: false,
@@ -83,6 +86,21 @@ export const useFlightStore = create<FlightState>((set) => ({
     } catch (error) {
       set({ loading: false })
       throw error
+    }
+  },
+
+  fetchFlightsForStaff: async (airlineCode: string) => {
+    set({ loading: true })
+    try {
+      const response = await apiClient.get<Flight[]>('/flights', {
+        params: { airlineCode: airlineCode, includePast: true }
+      })
+      set({ staffFlights: response.data, loading: false })
+    } catch (error) {
+      set({ loading: false })
+      throw error
+    } finally {
+      set({ loading: false })
     }
   },
 

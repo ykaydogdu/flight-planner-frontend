@@ -40,7 +40,7 @@ const airportsMock: Airport[] = [
 
 // Shared mocks so tests can inspect call counts - defined before use
 const fetchAirportsMock = vi.fn(() => Promise.resolve())
-const searchFlightsMock = vi.fn(() => Promise.resolve())
+const fetchFlightsForStaffMock = vi.fn(() => Promise.resolve())
 
 vi.mock('@/store/airports', () => ({
   useAirportStore: () => ({
@@ -136,8 +136,8 @@ const fetchBookingsForFlightMock = vi.fn(() => Promise.resolve(bookingsMock))
 
 vi.mock('@/store/flights', () => ({
   useFlightStore: () => ({
-    flights: flightsMock,
-    searchFlights: searchFlightsMock,
+    staffFlights: flightsMock,
+    fetchFlightsForStaff: fetchFlightsForStaffMock,
     fetchFlightStats: fetchFlightStatsMock,
     createFlight: createFlightMock,
     updateFlight: updateFlightMock,
@@ -170,9 +170,9 @@ describe('FlightManagement', () => {
   it('fetches airports, flights & stats on mount and renders current flights tab', async () => {
     renderComponent()
 
-    // fetchAirports & searchFlights should be called once
+    // fetchAirports & fetchFlightsForStaff should be called once
     expect(fetchAirportsMock).toHaveBeenCalledTimes(1)
-    expect(searchFlightsMock).toHaveBeenCalledTimes(1)
+    expect(fetchFlightsForStaffMock).toHaveBeenCalledTimes(1)
 
     // Stats should be fetched with correct airline code
     await waitFor(() => {

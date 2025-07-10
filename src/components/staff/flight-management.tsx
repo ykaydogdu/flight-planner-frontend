@@ -74,8 +74,8 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
   const { user } = useAuthStore()
   const { airports, fetchAirports } = useAirportStore()
   const { 
-    flights, 
-    searchFlights, 
+    staffFlights, 
+    fetchFlightsForStaff, 
     fetchFlightStats, 
     createFlight, 
     updateFlight, 
@@ -126,20 +126,20 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
   // 1) Get flights once
   useEffect(() => {
     if (user?.airline?.code) {
-      searchFlights({ airlineCode: user.airline.code, includePast: true })
+      fetchFlightsForStaff(user.airline.code)
     }
-  }, [searchFlights, user?.airline?.code])
+  }, [fetchFlightsForStaff, user?.airline?.code])
 
   // 2) Whenever flights list updates, fetch & merge stats
   useEffect(() => {
-    if (!user?.airline?.code || flights.length === 0) return
+    if (!user?.airline?.code || staffFlights.length === 0) return
     async function loadStats() {
       setLoading(true)
       const data = await fetchFlightStats(user?.airline?.code || '')
       
       // Merge flight data with booking stats while preserving any previously fetched booking details
       setFlightsWithBookings((prevFlights) => {
-        const merged = flights.map((flight) => {
+        const merged = staffFlights.map((flight) => {
           const prev = prevFlights.find((f) => f.id === flight.id)
           const flightStats = data.flightStats.find((stat) => stat.flightId === flight.id)
 
@@ -168,7 +168,7 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
     loadStats().finally(() => {
       setLoading(false)
     })
-  }, [flights, user?.airline?.code, setOverallStats, fetchFlightStats])
+  }, [staffFlights, user?.airline?.code, setOverallStats, fetchFlightStats])
 
   const onSubmit = async (data: FlightFormData) => {
     if (!user?.airline?.code) return
@@ -186,9 +186,7 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
         await createFlight(flightData)
       }
 
-      await searchFlights({
-        airlineCode: user.airline.code
-      })
+      await fetchFlightsForStaff(user.airline.code)
       setShowCreateForm(false)
       setEditing(null)
       reset()
@@ -223,9 +221,7 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
   const handleDelete = async (flightId: number) => {
     try {
       await deleteFlight(flightId)
-      await searchFlights({
-        airlineCode: user?.airline?.code || ''
-      })
+      await fetchFlightsForStaff(user?.airline?.code || '')
     } catch (error) {
       console.error('Error deleting flight:', error)
       alert('Failed to delete flight. Please try again.')
