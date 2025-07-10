@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useAuthStore } from '@/store/auth'
 import { UserPlus, Loader2 } from 'lucide-react'
+import type { ErrorResponse } from '@/types'
 
 const registerSchema = z.object({
   username: z.string().min(3, 'Username must be at least 3 characters'),
@@ -45,10 +46,10 @@ export function RegisterForm() {
     try {
       await registerUser({
         username: data.username,
+        password: data.password,
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
-        password: data.password,
       })
       
       setSuccess(true)
@@ -57,9 +58,7 @@ export function RegisterForm() {
       }, 2000)
     } catch (error: unknown) {
       console.error('Registration error:', error)
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Registration failed. Please try again.'
+      const errorMessage = (error as ErrorResponse).response.data
       setError(errorMessage)
     } finally {
       setIsLoading(false)

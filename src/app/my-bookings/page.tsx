@@ -28,7 +28,7 @@ export default function MyBookingsPage() {
           {[1, 2, 3].map((i) => (
             <Card key={i} className="animate-pulse">
               <CardContent className="p-6">
-                <div className="h-24 bg-secondary rounded-md"></div>
+                <div className="h-24 bg-app rounded-md"></div>
               </CardContent>
             </Card>
           ))}

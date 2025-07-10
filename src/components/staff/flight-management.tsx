@@ -614,7 +614,7 @@ export function FlightManagement({ setOverallStats }: { setOverallStats: (stats:
                   return (
                     <div key={flight.id} className="border-app rounded-lg overflow-hidden">
                       <div
-                        className={`p-4 hover:bg-secondary cursor-pointer ${isPastFlight ? 'bg-secondary opacity-75' : 'bg-secondary'}`}
+                        className={`p-4 hover:bg-secondary cursor-pointer ${isPastFlight ? 'bg-secondary opacity-75' : 'bg-app'}`}
                         onClick={() => toggleFlightExpansion(flight.id)}
                       >
                         <div className="flex items-center gap-1">

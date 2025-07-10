@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
@@ -197,7 +197,7 @@ export function FlightSearchForm({ variant = 'default' }: { variant?: 'default' 
                 <button
                   type="button"
                   onClick={() => handleUseNearestAirport('origin')}
-                  className="text-sm text-primary hover:text-primary-foreground underline cursor-pointer ml-1"
+                  className="text-sm text-primary hover:text-secondary-foreground underline cursor-pointer ml-1"
                   disabled={loadingAirport}
                 >
                   {loadingAirport ? 'Loading...' : 'Use nearest airport'}
@@ -242,7 +242,7 @@ export function FlightSearchForm({ variant = 'default' }: { variant?: 'default' 
                 <button
                   type="button"
                   onClick={() => handleUseNearestAirport('destination')}
-                  className="text-sm text-primary hover:text-primary-foreground underline cursor-pointer ml-1"
+                  className="text-sm text-primary hover:text-secondary-foreground underline cursor-pointer ml-1"
                   disabled={loadingAirport}
                 >
                   {loadingAirport ? 'Loading...' : 'Use nearest airport'}

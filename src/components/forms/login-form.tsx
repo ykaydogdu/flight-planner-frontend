@@ -22,6 +22,7 @@ export function LoginForm() {
   const { login } = useAuthStore()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [success, setSuccess] = useState<boolean>(false)
 
   const {
     register,
@@ -42,12 +43,13 @@ export function LoginForm() {
       }
       
       await login(credentials)
-      navigate('/')
+      setTimeout(() => {
+        navigate('/')
+      }, 1000)
+      setSuccess(true)
     } catch (error: unknown) {
       console.error('Login error:', error)
-      const errorMessage = error instanceof Error 
-        ? error.message 
-        : 'Login failed. Please check your credentials.'
+      const errorMessage = 'Login failed. Please check your credentials.'
       setError(errorMessage)
     } finally {
       setIsLoading(false)
@@ -67,6 +69,12 @@ export function LoginForm() {
           {error && (
             <div className="bg-destructive/10 border border-destructive text-destructive px-4 py-3 rounded-md text-sm">
               {error}
+            </div>
+          )}
+
+          {success && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-md text-sm">
+              Login successful! Redirecting...
             </div>
           )}
 

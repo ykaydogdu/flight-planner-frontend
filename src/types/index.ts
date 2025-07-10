@@ -103,3 +103,12 @@ export interface PassengerSelection {
   business: number
   firstClass: number
 }
+
+export interface ErrorResponse {
+  code: string
+  status: number
+  name: string
+  response: {
+    data: string
+  }
+}
